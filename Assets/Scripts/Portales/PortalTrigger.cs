@@ -5,28 +5,20 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class PortalTrigger : MonoBehaviour
 {
-    GameObject m_PlayerGameObject;
+    private Portal m_AttachedPortal;
+    private GameObject m_PlayerGameObject;
 
-    private bool m_PlayerInsideCollider;
     private void Start()
     {
-        m_PlayerInsideCollider = false;
+        m_AttachedPortal = GetComponentInParent<Portal>();
         m_PlayerGameObject = GameController.Instance.GetPlayerGameObject();
-    }
-
-    private void Update()
-    {
-        if (!m_PlayerInsideCollider) return;
-        
-
-        
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject == m_PlayerGameObject)
         {
-            m_PlayerInsideCollider = true;
+            m_AttachedPortal.PlayerInsideCollider(true);
         }
     }
 
@@ -34,7 +26,7 @@ public class PortalTrigger : MonoBehaviour
     {
         if (other.gameObject == m_PlayerGameObject)
         {
-            m_PlayerInsideCollider = false;
+            m_AttachedPortal.PlayerInsideCollider(false);
         }
     }
 }
