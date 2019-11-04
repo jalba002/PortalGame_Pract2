@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class GameController : Singleton<GameController>
 {
-    public LayerMask m_IgnoreLayersOnPortalCollision;
-    public LayerMask m_PlayerLayer;
-
     private GameObject m_PlayerGameObject;
 
     private void Awake()
@@ -31,8 +28,6 @@ public class GameController : Singleton<GameController>
 
     public void PlayerIgnoreLayers(bool l_Ignore)
     {
-        int mPlayerLayerShitfted = m_PlayerLayer.value >> 4;
-        Debug.Log(mPlayerLayerShitfted);
-        Physics.IgnoreLayerCollision(m_PlayerLayer.value >> 8, m_IgnoreLayersOnPortalCollision.value >> 8, l_Ignore);
+        m_PlayerGameObject.layer = l_Ignore ? 11 : 10;
     }
 }

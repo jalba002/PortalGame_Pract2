@@ -9,7 +9,7 @@ public class Portal : MonoBehaviour
     public Plane m_PortalPlane;
 
     public float m_NearClipOffset = 0.5f;
-    public bool m_PlayerInsideCollider = true;
+    public bool m_PlayerInsideCollider;
 
     //Private variables.
 
@@ -26,8 +26,8 @@ public class Portal : MonoBehaviour
 
     public void Init()
     {
-        m_PortalPlane = new Plane(this.gameObject.transform.forward, 50f);
-        
+        m_PortalPlane = new Plane(this.gameObject.transform.forward, this.gameObject.transform.position);
+        m_PlayerInsideCollider = false;
     }
 
     private void CheckTeleport()
@@ -42,7 +42,10 @@ public class Portal : MonoBehaviour
     private void TeleportPlayer()
     {
         //Set the player position to the other portal position.
-        Debug.Log("Must teleport!");
+        GameObject l_Player = GameController.Instance.GetPlayerGameObject();
+        Quaternion l_PlayerRot = l_Player.transform.rotation;
+        l_Player.transform.position = m_MirrorPortal.transform.position;
+        l_Player.transform.rotation= m_MirrorPortal.transform.localRotation;
     }
 
     private void UpdatePortalTexture()
