@@ -7,10 +7,10 @@ public class Portal : MonoBehaviour
     public Camera m_PortalCamera;
 
     public Plane m_PortalPlane;
+    public LayerMask m_TeleportLayerMask;
 
     public float m_NearClipOffset = 0.5f;
     public bool m_PlayerInsideCollider;
-
     //Private variables.
 
     void Start()
@@ -20,7 +20,7 @@ public class Portal : MonoBehaviour
 
     void Update()
     {
-        UpdatePortalTexture();
+        UpdatePortalTexture2();
         CheckTeleport();
     }
 
@@ -41,14 +41,25 @@ public class Portal : MonoBehaviour
 
     private void TeleportPlayer()
     {
-        //Set the player position to the other portal position.
         GameObject l_Player = GameController.Instance.GetPlayerGameObject();
-        Quaternion l_PlayerRot = l_Player.transform.rotation;
+        //Vector3 l_ReflectedPosition = m_MirrorPortal.transform.TransformPoint(l_Player.transform.position);
+        //l_Player.transform.position = m_MirrorPortal.transform.TransformPoint(l_ReflectedPosition);
+
         l_Player.transform.position = m_MirrorPortal.transform.position;
-        l_Player.transform.rotation= m_MirrorPortal.transform.localRotation;
+        l_Player.GetComponent<PlayerController>().ForceYaw(l_Player.transform.eulerAngles.y - (m_MirrorPortal.transform.eulerAngles.y - this.transform.eulerAngles.y));
     }
 
-    private void UpdatePortalTexture()
+    private void UpdatePortalTexture1()
+    {
+        Vector3 l_ReflectedPosition = m_MirrorPortal.transform.InverseTransformPoint(m_PlayerCamera.position);
+        Vector3 l_ReflectedDirection = m_MirrorPortal.transform.InverseTransformDirection(m_PlayerCamera.forward);
+        m_MirrorPortal.m_PortalCamera.transform.position = m_MirrorPortal.transform.TransformPoint(l_ReflectedPosition);
+        m_MirrorPortal.m_PortalCamera.transform.forward = m_MirrorPortal.transform.TransformDirection(l_ReflectedDirection);
+
+        m_PortalCamera.nearClipPlane = Vector3.Distance(m_PortalCamera.transform.position, this.transform.position) + m_NearClipOffset;
+    }
+
+    private void UpdatePortalTexture2()
     {
         Vector3 l_EulerAngles = transform.rotation.eulerAngles;
         Quaternion l_Rotation = Quaternion.Euler(l_EulerAngles.x, l_EulerAngles.y + 180.0f, l_EulerAngles.z);

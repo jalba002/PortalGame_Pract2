@@ -359,4 +359,9 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    public void ForceYaw(float l_Value)
+    {
+        m_Yaw = l_Value;
+    }
+
 }
