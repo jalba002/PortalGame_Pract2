@@ -11,6 +11,8 @@ public class GameController : Singleton<GameController>
     public PlayerComponents m_PlayerComponents;
     private GameObject m_PlayerGameObject;
 
+    public Transform m_PortalCheckerPoint;
+    public List<Transform> m_PortalCheckersList = new List<Transform>();
     public Portal m_BluePortal;
     public Portal m_OrangePortal;
 
@@ -22,6 +24,11 @@ public class GameController : Singleton<GameController>
     void Start()
     {
         m_PlayerComponents = new PlayerComponents();
+        //m_PortalCheckersList.Add(m_PortalCheckerPoint);
+        foreach(Transform T in m_PortalCheckerPoint.GetComponentsInChildren<Transform>())
+        {
+            m_PortalCheckersList.Add(T);
+        }
     }
 
     void Update()

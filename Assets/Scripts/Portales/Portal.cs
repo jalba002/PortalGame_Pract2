@@ -89,4 +89,11 @@ public class Portal : MonoBehaviour
         m_PlayerInsideCollider = l_Inside;
         GameController.Instance.PlayerIgnoreLayers(m_PlayerInsideCollider);
     }
+
+    public void SetNewPosition(RaycastHit l_SpawnPoint)
+    {
+        transform.position = l_SpawnPoint.point;
+        transform.forward = l_SpawnPoint.normal;
+        m_PortalPlane = new Plane(this.gameObject.transform.forward, this.gameObject.transform.position);
+    }
 }

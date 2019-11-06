@@ -5,15 +5,14 @@ public class PlayerController : MonoBehaviour
 {
     private bool m_IsPlayerDead = false;
 
-    [Header("Recoil Deviations")]
-    public float m_AccumulatedRecoil;
-    [HideInInspector] public bool m_RemovingRecoil;
-    [Range(0f, 1f)] public float m_RecoilRecoverySpeed;
-
     [Header("Recoil Settings")]
     public bool m_EnableRecoil;
     private bool m_AddedRecoil = false;
     private bool m_Shooting = false;
+    [HideInInspector] public float m_AccumulatedRecoil;
+    [HideInInspector] public bool m_RemovingRecoil;
+    [Range(0f, 1f)] public float m_RecoilRecoverySpeed;
+
 
     [Header("Camera Settings")]
     public float m_YawRotationalSpeed = 360.0f;
@@ -52,6 +51,7 @@ public class PlayerController : MonoBehaviour
         public KeyCode m_JumpKeyCode = KeyCode.Space;
         public KeyCode m_ReloadKeyCode = KeyCode.R;
         public KeyCode m_InteractButton = KeyCode.E;
+        public KeyCode m_AimButton = KeyCode.Z;
         [Header("Mouse Bindings")]
         public int m_MouseShootButton = 0;
         public int m_MouseAimButton = 1;
@@ -230,6 +230,7 @@ public class PlayerController : MonoBehaviour
         {
             m_Shooting = false;
         }
+
         if (Input.GetMouseButton(KeysDefinition.m_MouseAimButton))
         {
             if (m_EquippedWeapon.Shoot(GameController.Instance.m_OrangePortal))
@@ -252,16 +253,16 @@ public class PlayerController : MonoBehaviour
             m_Shooting = false;
         }
 
-        /*if (Input.GetMouseButtonDown(KeysDefinition.m_AimButton))
+        if (Input.GetKeyDown(KeysDefinition.m_AimButton))
             m_EquippedWeapon.Aim();
-        else if (Input.GetMouseButtonUp(KeysDefinition.m_AimButton))
-            m_EquippedWeapon.StopAiming();*/
+        else if (Input.GetKeyUp(KeysDefinition.m_AimButton))
+            m_EquippedWeapon.StopAiming();
 
         if (Input.GetKeyDown(KeysDefinition.m_ReloadKeyCode))
             m_EquippedWeapon.Reload();
     }
 
-    /*private void AnalyzeInteractions()
+    private void AnalyzeInteractions()
     {
         Ray l_CameraRay = m_RenderCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
         RaycastHit l_RaycastHit;
@@ -299,7 +300,7 @@ public class PlayerController : MonoBehaviour
         {
             m_InteractionScreenPanel.SetActive(false);
         }
-    }*/
+    }
 
     public void CorrectRecoil()
     {

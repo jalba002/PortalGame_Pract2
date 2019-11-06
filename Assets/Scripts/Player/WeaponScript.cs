@@ -64,7 +64,7 @@ public class WeaponScript : MonoBehaviour
     public LayerMask m_ShootLayerMask;
     [Range(1, 10)] public int m_ShootChecksPerFrame;
     public ShootingType m_ShootingType = ShootingType.Hitscan;
-    [Tooltip("Rate of fire measured in RPM aka. Rounds Per Minute")]public float m_FireRate;
+    [Tooltip("Rate of fire measured in RPM aka. Rounds Per Minute")] public float m_FireRate;
     public float m_MaxRange;
     private float m_FireTimer;
     private float m_RealROF;
@@ -142,7 +142,6 @@ public class WeaponScript : MonoBehaviour
         m_CurrentCarriedAmmo = 1;
         m_InitialSwayPosition = transform.localPosition;
         m_ShootAudioSource.clip = SoundClipList.m_ShootSound;
-        //m_RealROF = Mathf.Max(60.0f / m_FireRate, 1f);
         m_RealROF = 60.0f / m_FireRate;
 
         m_FireTimer = 0.0f;
@@ -180,7 +179,7 @@ public class WeaponScript : MonoBehaviour
             m_AbleToShoot = false;
             ReduceAmmo(1);
             m_FireTimer = 0.0f;
-            PlayClip(m_ShootAudioSource, SoundClipList.m_ShootSound);
+            AudioManager.PlayClip(m_ShootAudioSource, SoundClipList.m_ShootSound);
             return true;
         }
         return l_ShootThisFrame;
@@ -190,7 +189,6 @@ public class WeaponScript : MonoBehaviour
     {
         if (CanShoot())
         {
-            Debug.Log("Shoot!");
             if (!m_IsAiming)
             {
                 //m_Animator.Play("Fire", 0, 0f);
@@ -206,7 +204,7 @@ public class WeaponScript : MonoBehaviour
             switch (m_ShootingType)
             {
                 case ShootingType.Hitscan:
-                    return false;
+                    //return false;
                     //Instantiate the whole thingy.
                     Ray l_CameraRay = m_GunCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
                     RaycastHit l_RaycastHit;
@@ -229,7 +227,15 @@ public class WeaponScript : MonoBehaviour
                     Debug.LogWarning("No projectile method programmed yet!");
                     break;
                 case ShootingType.Portal:
-                    Debug.LogWarning("Portal Throw not programmed yet");
+                    Ray l_CameraPortalRay = m_GunCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
+                    RaycastHit l_RayHit;
+                    if (Physics.Raycast(l_CameraPortalRay, out l_RayHit, m_MaxRange, m_ShootLayerMask.value))
+                    {
+                        GameController.Instance.m_PortalCheckerPoint.transform.position = l_RayHit.point + (l_RayHit.normal * 0.01f);
+                        GameController.Instance.m_PortalCheckerPoint.transform.forward = -l_RayHit.normal;
+
+                        PortalSpawner.SpawnPortal(l_Portal, l_RayHit, GameController.Instance.m_PortalCheckersList);
+                    }
                     break;
                 default:
                     Debug.Log("Did you forget to set the Shooting type?");
@@ -256,9 +262,7 @@ public class WeaponScript : MonoBehaviour
         //m_CrosshairGO.SetActive(false);
         if (!soundHasPlayed)
         {
-            m_MainAudioSource.clip = SoundClipList.m_AimSound;
-            m_MainAudioSource.Play();
-
+            AudioManager.PlayClip(m_MainAudioSource, SoundClipList.m_AimSound);
             soundHasPlayed = true;
         }
     }
@@ -267,7 +271,8 @@ public class WeaponScript : MonoBehaviour
     {
         if (m_Reloading || !m_IsAiming) return;
         m_IsAiming = false;
-        m_Animator.SetBool("Aim", false);
+        
+        //m_Animator.SetBool("Aim", false);
         m_StopZoom = ExecuteCoroutine(m_StopZoom, StopZoom());
         soundHasPlayed = false;
         //m_CrosshairGO.SetActive(true);
@@ -283,30 +288,16 @@ public class WeaponScript : MonoBehaviour
         {
             StopAiming();
             //m_Animator.Play("Reload Out Of Ammo", 0, 0f);
-            //PlayClip(SoundClipList.m_ReloadSoundOutOfAmmo);
+            AudioManager.PlayClip(m_MainAudioSource, SoundClipList.m_ReloadSoundOutOfAmmo);
             m_Reloading = true;
         }
         else if (m_CurrentAmmo < m_MaxAmmo)
         {
             StopAiming();
             //m_Animator.Play("Reload Ammo Left", 0, 0f);
-            //PlayClip(SoundClipList.m_ReloadSoundAmmoLeft);
+            AudioManager.PlayClip(m_MainAudioSource, SoundClipList.m_ReloadSoundAmmoLeft);
             m_Reloading = true;
         }
-    }
-
-    private void PlayClip(AudioSource l_AudioSource, AudioClip l_Clip)
-    {
-        /*
-        if (l_AudioSource == null) return;
-        if (l_Clip == null)
-        {
-            Debug.LogWarning(l_Clip.ToString() + " is null!");
-            return;
-        }
-        m_MainAudioSource.clip = l_Clip;
-        m_MainAudioSource.Play();
-        */
     }
 
     private void PlayAnimation(string l_Animation, int l_Layer, float l_Time)
