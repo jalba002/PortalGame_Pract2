@@ -61,7 +61,7 @@ public class PlayerController : MonoBehaviour
     }
     public KeyBindings KeysDefinition;
     [Header("Weapon Settings")]
-    //public WeaponScript m_EquippedWeapon;
+    public WeaponScript m_EquippedWeapon;
 
     [Header("Jumping Settings")]
     public float m_JumpSpeed;
@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour
         if (!m_IsPlayerDead)
         {
             PlayerMovement();
-            //RegisterWeaponInputs();
+            RegisterWeaponInputs();
             //AnalyzeInteractions();
 #if UNITY_EDITOR
             UnityEditorChecks();
@@ -114,10 +114,10 @@ public class PlayerController : MonoBehaviour
     {
         if (m_IsPlayerDead) return;
         CameraMovement();
-        /*if (m_EnableRecoil && m_EquippedWeapon != null)
+        if (m_EnableRecoil && m_EquippedWeapon != null)
         {
             CorrectRecoil();
-        }*/
+        }
     }
 
     void CameraMovement()
@@ -206,12 +206,33 @@ public class PlayerController : MonoBehaviour
     }
 #endif
 
-    /**private void RegisterWeaponInputs()
+    private void RegisterWeaponInputs()
     {
         if (m_EquippedWeapon == null) return;
         if (Input.GetMouseButton(KeysDefinition.m_MouseShootButton))
         {
-            if (m_EquippedWeapon.Shoot())
+            if (m_EquippedWeapon.Shoot(GameController.Instance.m_BluePortal))
+            {
+                //Add recoil here.
+                if (m_EnableRecoil)
+                {
+                    StartCoroutine(AddRecoil());
+                    m_Shooting = true;
+                }
+
+            }
+            else if (m_EquippedWeapon.m_CurrentAmmo > 0 && m_EnableRecoil)
+            {
+                m_WaitToRemoveRecoilCoroutine = ExecuteCoroutine(m_WaitToRemoveRecoilCoroutine, WaitToRemoveRecoil());
+            }
+        }
+        else if (Input.GetMouseButtonUp(KeysDefinition.m_MouseShootButton) || m_Shooting)
+        {
+            m_Shooting = false;
+        }
+        if (Input.GetMouseButton(KeysDefinition.m_MouseAimButton))
+        {
+            if (m_EquippedWeapon.Shoot(GameController.Instance.m_OrangePortal))
             {
                 //Add recoil here.
                 if (m_EnableRecoil)
@@ -231,14 +252,14 @@ public class PlayerController : MonoBehaviour
             m_Shooting = false;
         }
 
-        if (Input.GetMouseButtonDown(KeysDefinition.m_MouseAimButton))
+        /*if (Input.GetMouseButtonDown(KeysDefinition.m_AimButton))
             m_EquippedWeapon.Aim();
-        else if (Input.GetMouseButtonUp(KeysDefinition.m_MouseAimButton))
-            m_EquippedWeapon.StopAiming();
+        else if (Input.GetMouseButtonUp(KeysDefinition.m_AimButton))
+            m_EquippedWeapon.StopAiming();*/
 
         if (Input.GetKeyDown(KeysDefinition.m_ReloadKeyCode))
             m_EquippedWeapon.Reload();
-    }*/
+    }
 
     /*private void AnalyzeInteractions()
     {
@@ -280,7 +301,7 @@ public class PlayerController : MonoBehaviour
         }
     }*/
 
-    /*public void CorrectRecoil()
+    public void CorrectRecoil()
     {
         if (m_Shooting && m_AddedRecoil)
         {
@@ -293,7 +314,7 @@ public class PlayerController : MonoBehaviour
             //Baixa el recoil.
             m_RecoilCoroutine = ExecuteCoroutine(m_RecoilCoroutine, RemoveRecoil());
         }
-    }*/
+    }
 
     private Coroutine ExecuteCoroutine(Coroutine l_CoroutineHolder, IEnumerator l_MethodName)
     {
@@ -302,7 +323,7 @@ public class PlayerController : MonoBehaviour
         return StartCoroutine(l_MethodName);
     }
 
-    /*public IEnumerator RemoveRecoil()
+    public IEnumerator RemoveRecoil()
     {
         m_RemovingRecoil = true;
         //float l_OriginalAmount = m_AccumulatedRecoil;
@@ -333,7 +354,7 @@ public class PlayerController : MonoBehaviour
         yield return null;
         if (!m_AddedRecoil) m_AddedRecoil = true;
         m_Pitch -= value;
-    }*/
+    }
 
     private void PlayFootstepSounds()
     {

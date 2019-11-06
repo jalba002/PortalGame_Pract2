@@ -4,7 +4,15 @@ using UnityEngine;
 
 public class GameController : Singleton<GameController>
 {
+    public class PlayerComponents
+    {
+        public PlayerHUD m_HUDUpdater;
+    }
+    public PlayerComponents m_PlayerComponents;
     private GameObject m_PlayerGameObject;
+
+    public Portal m_BluePortal;
+    public Portal m_OrangePortal;
 
     private void Awake()
     {
@@ -13,7 +21,7 @@ public class GameController : Singleton<GameController>
 
     void Start()
     {
-
+        m_PlayerComponents = new PlayerComponents();
     }
 
     void Update()

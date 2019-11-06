@@ -24,7 +24,7 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 3
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
@@ -51,7 +51,7 @@ LightmapSettings:
     m_IndirectOutputScale: 1
     m_AlbedoBoost: 1
     m_TemporalCoherenceThreshold: 1
-    m_EnvironmentLightingMode: 0
+    m_EnvironmentLightingMode: 1
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
@@ -875,7 +875,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 546316414}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: 11.44, y: 1, z: 2.3}
+  m_LocalPosition: {x: 11.44, y: 1, z: -1.96}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 1286024577}
@@ -1009,6 +1009,62 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &632708330 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: a1416dba650229e4f96c511c2225e9a3,
+    type: 3}
+  m_PrefabInternal: {fileID: 1147527028}
+--- !u!114 &632708333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 632708330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8922df26c5a631748bf6149efd002f5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Owner: {fileID: 751321251}
+  m_GunCamera: {fileID: 1771781848}
+  m_MainCamera: {fileID: 1770511543}
+  m_FOVSpeed: 60
+  m_AimGunFOV: 60
+  m_AimMainFOV: 30
+  m_RecoilKick: 0
+  m_SwayAmount: 0.4
+  m_MaxSwayAmount: 0.05
+  m_SwaySmoothValue: 4
+  m_MaxAmmo: 2
+  m_MaxCarriedAmmo: 2
+  m_EnableRecoil: 0
+  m_EnableDecals: 0
+  m_AutoReload: 0
+  m_DamagePerShot: 0
+  m_ShootLayerMask:
+    serializedVersion: 2
+    m_Bits: 8192
+  m_ShootChecksPerFrame: 1
+  m_ShootingType: 2
+  m_FireRate: 180
+  m_MaxRange: 50
+  m_MuzzleFlash: {fileID: 0}
+  m_LightDuration: 0.02
+  m_ShootAudioSource: {fileID: 751321254}
+  m_MainAudioSource: {fileID: 751321254}
+  PrefabsList:
+    m_BulletPrefab: {fileID: 0}
+    m_CasingPrefab: {fileID: 0}
+    m_WeaponDecals: {fileID: 0}
+  SpawnpointsList:
+    m_CasingSpawnPoint: {fileID: 0}
+    m_BulletSpawnPoint: {fileID: 0}
+  SoundClipList:
+    m_AimSound: {fileID: 0}
+    m_ShootSound: {fileID: 0}
+    m_ReloadSoundOutOfAmmo: {fileID: 0}
+    m_ReloadSoundAmmoLeft: {fileID: 0}
+  m_CrosshairGO: {fileID: 0}
 --- !u!1 &657595959
 GameObject:
   m_ObjectHideFlags: 0
@@ -1118,8 +1174,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.1200001, y: 1.1177982, z: 0.5659484}
-  m_Center: {x: 0, y: 0.0028202534, z: 0.22202568}
+  m_Size: {x: 1.25, y: 1.25, z: 1.75}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &699865521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1179,6 +1235,7 @@ GameObject:
   - component: {fileID: 751321253}
   - component: {fileID: 751321252}
   - component: {fileID: 751321251}
+  - component: {fileID: 751321254}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -1231,7 +1288,8 @@ MonoBehaviour:
     m_MouseAimButton: 1
     m_DebugLockAngleKeyCode: 105
     m_DebugLockKeyCode: 111
-  m_JumpSpeed: 3
+  m_EquippedWeapon: {fileID: 632708333}
+  m_JumpSpeed: 5
   m_FastSpeedMultiplier: 1.175
   m_OnAirSpeedMultiplier: 1
   m_WalkingSound: {fileID: 0}
@@ -1270,6 +1328,101 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &751321254
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 751321250}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &783977401
 Prefab:
   m_ObjectHideFlags: 0
@@ -2191,8 +2344,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.12, y: 1.1177982, z: 0.5482321}
-  m_Center: {x: -9.231791e-17, y: 0.0028202534, z: 0.23088388}
+  m_Size: {x: 1.25, y: 1.25, z: 1.75}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1329051473
 GameObject:
   m_ObjectHideFlags: 0
@@ -2862,6 +3015,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c30b7a7833df91441a4005204a57c61f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BluePortal: {fileID: 546316415}
+  m_OrangePortal: {fileID: 1945882858}
 --- !u!4 &1670935853
 Transform:
   m_ObjectHideFlags: 0
@@ -3539,7 +3694,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1945882857}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.45, y: 1, z: -3.79}
+  m_LocalPosition: {x: 9.67, y: 1, z: -3.79}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 699865519}
