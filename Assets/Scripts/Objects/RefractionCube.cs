@@ -12,29 +12,34 @@ public class RefractionCube : Companion
     void Update()
     {
         m_LineRenderer.gameObject.SetActive(m_CreateRefraction);
-        m_CreateRefraction = false;
+        CreateRefraction();
     }
 
-    public void CreateRefraction()
+    private void CreateRefraction()
     {
-        m_CreateRefraction = true;
+        if (!m_CreateRefraction) return;
         Vector3 l_EndRaycastPosition = Vector3.forward * m_MaxDistance;
         RaycastHit l_RaycastHit;
         if (Physics.Raycast(new Ray(m_LineRenderer.transform.position, m_LineRenderer.transform.forward), out l_RaycastHit, m_MaxDistance, m_CollisionLayerMask.value))
         {
-            l_EndRaycastPosition = Vector3.forward * l_RaycastHit.distance;
+            l_EndRaycastPosition.z = ;
             try
             {
                 if (l_RaycastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
                 {
                     //Reflect ray
-                    l_RaycastHit.collider.GetComponent<RefractionCube>().CreateRefraction();
+                    l_RaycastHit.collider.GetComponent<RefractionCube>().StartRefracting();
                 }
             }
             catch { }
             //Other collisions
         }
         m_LineRenderer.SetPosition(1, l_EndRaycastPosition);
+        m_CreateRefraction = false;
     }
 
+    public void StartRefracting()
+    {
+        m_CreateRefraction = true;
+    }
 }

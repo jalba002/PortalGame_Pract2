@@ -52,7 +52,7 @@ public class Turret : MonoBehaviour
             {
                 if (l_RaycastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
                 {
-                    l_RaycastHit.collider.GetComponent<RefractionCube>().CreateRefraction();
+                    l_RaycastHit.collider.GetComponent<RefractionCube>().StartRefracting();
                 }
             }
             catch { }

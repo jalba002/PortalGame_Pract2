@@ -1181,7 +1181,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1676643312457006}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 23.22}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4733142944174836}
@@ -1850,10 +1850,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd70acf51bf7f7748a94323109ef3eae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_ObjectAttacher:
+    m_AttachingObject: 0
+    m_ObjectAttached: {fileID: 0}
+    m_AttachingObjectSpeed: 0
+    m_AttachingPosition: {fileID: 0}
+    m_AimingAtPickable: 0
+    m_LookingAtThisObject: {fileID: 0}
+  m_EnableRecoil: 0
   m_AccumulatedRecoil: 0
   m_RemovingRecoil: 0
   m_RecoilRecoverySpeed: 45
-  m_EnableRecoil: 0
   m_YawRotationalSpeed: 180
   m_PitchRotationalSpeed: 180
   m_MinPitch: -85
@@ -1879,10 +1886,12 @@ MonoBehaviour:
     m_JumpKeyCode: 32
     m_ReloadKeyCode: 114
     m_InteractButton: 101
+    m_AimButton: 122
     m_MouseShootButton: 0
     m_MouseAimButton: 1
     m_DebugLockAngleKeyCode: 105
     m_DebugLockKeyCode: 111
+  m_EquippedWeapon: {fileID: 0}
   m_JumpSpeed: 5
   m_FastSpeedMultiplier: 2
   m_OnAirSpeedMultiplier: 1.5
