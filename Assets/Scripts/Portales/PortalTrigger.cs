@@ -14,19 +14,19 @@ public class PortalTrigger : MonoBehaviour
         m_PlayerGameObject = GameController.Instance.GetPlayerGameObject();
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject == m_PlayerGameObject)
+        if (other.gameObject == m_PlayerGameObject || other.gameObject.GetComponent<Companion>() != null)
         {
-            m_AttachedPortal.PlayerInsideCollider(true);
+            m_AttachedPortal.ObjectInsideCollider(other.gameObject, true);
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    public void OnTriggerExit(Collider other)
     {
-        if (other.gameObject == m_PlayerGameObject)
+        if (other.gameObject == m_PlayerGameObject || other.gameObject.GetComponent<Companion>() != null)
         {
-            m_AttachedPortal.PlayerInsideCollider(false);
+            m_AttachedPortal.ObjectInsideCollider(other.gameObject, false);
         }
     }
 }

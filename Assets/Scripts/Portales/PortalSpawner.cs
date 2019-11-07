@@ -8,7 +8,7 @@ public class PortalSpawner
 
     public static void SpawnPortal(Portal l_PortalToSpawn, RaycastHit l_HitPoint, List<Transform> l_Points)
     {
-        m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_ShootLayerMask;
+        m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_PortalLayerMask;
         m_Direction = -l_HitPoint.normal;
         if (CheckAllPoints(l_Points))
         {
@@ -23,7 +23,7 @@ public class PortalSpawner
             Transform l_ValidPoint = m_ValidPoints[i];
             Ray l_Ray = new Ray(l_ValidPoint.transform.position, m_Direction);
             RaycastHit l_RaycastHit;
-            if (Physics.Raycast(l_Ray, out l_RaycastHit, 0.3f, m_PortalLayerMask.value))
+            if (Physics.Raycast(l_Ray, out l_RaycastHit, 0.1f, m_PortalLayerMask.value))
             {
                 if (l_RaycastHit.collider.gameObject.tag != "PrintableWall")
                 {
@@ -33,7 +33,6 @@ public class PortalSpawner
             }
             else
             {
-                Debug.LogError("THIS NOT WORKING");
                 return false;
             }
         }

@@ -24,8 +24,7 @@ public class GameController : Singleton<GameController>
     void Start()
     {
         m_PlayerComponents = new PlayerComponents();
-        //m_PortalCheckersList.Add(m_PortalCheckerPoint);
-        foreach(Transform T in m_PortalCheckerPoint.GetComponentsInChildren<Transform>())
+        foreach (Transform T in m_PortalCheckerPoint.GetComponentsInChildren<Transform>())
         {
             m_PortalCheckersList.Add(T);
         }
@@ -41,8 +40,11 @@ public class GameController : Singleton<GameController>
         return m_PlayerGameObject;
     }
 
-    public void PlayerIgnoreLayers(bool l_Ignore)
+    public void ChangeLayer(GameObject l_Object, bool l_Ignore)
     {
-        m_PlayerGameObject.layer = l_Ignore ? 11 : 10;
+        if (l_Object == m_PlayerGameObject)
+            l_Object.layer = l_Ignore ? 11 : 10;
+        else
+            l_Object.layer = l_Ignore ? 16 : 15;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System;
 using UnityEngine;
 
 public class ButtonInteractable : InteractableObject
@@ -73,6 +74,27 @@ public class ButtonInteractable : InteractableObject
         }
         yield return new WaitForSeconds(m_DelayBetweenActivations);
         m_AlreadyInteracting = false;
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.GetComponent<Companion>() != null || other.gameObject == GameController.Instance.GetPlayerGameObject())
+        {
+            if (Interact())
+            {
+                //Play some kind of animation for the button
+            }
+        }
+    }
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.GetComponent<Companion>() != null || other.gameObject == GameController.Instance.GetPlayerGameObject())
+        {
+            if (Interact())
+            {
+                //Play some kind of animation for the button
+            }
+        }
     }
 
 }

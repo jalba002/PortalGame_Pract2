@@ -62,6 +62,7 @@ public class WeaponScript : MonoBehaviour
     public bool m_AutoReload;
     public int m_DamagePerShot;
     public LayerMask m_ShootLayerMask;
+    public LayerMask m_PortalLayerMask;
     [Range(1, 10)] public int m_ShootChecksPerFrame;
     public ShootingType m_ShootingType = ShootingType.Hitscan;
     [Tooltip("Rate of fire measured in RPM aka. Rounds Per Minute")] public float m_FireRate;
