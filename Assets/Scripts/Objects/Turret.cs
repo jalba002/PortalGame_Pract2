@@ -24,6 +24,13 @@ public class Turret : MonoBehaviour
         }
     }
 
+    public void AdaptSize()
+    {
+        Vector3 l_SelfScale = m_LineRenderer.transform.localScale;
+        l_SelfScale.z = 1f - (transform.localScale.z - 1f);
+        m_LineRenderer.transform.localScale = l_SelfScale;
+    }
+
     void Start()
     {
         l_DotAngleLaserActive = Mathf.Cos(m_AngleLaserActive * Mathf.Deg2Rad * 0.5f);
@@ -52,7 +59,7 @@ public class Turret : MonoBehaviour
             {
                 if (l_RaycastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
                 {
-                    l_RaycastHit.collider.GetComponent<RefractionCube>().StartRefracting();
+                    l_RaycastHit.collider.GetComponent<RefractionCube>().CreateRefraction();
                 }
             }
             catch { }

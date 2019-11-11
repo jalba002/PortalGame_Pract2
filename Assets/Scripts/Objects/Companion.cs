@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Companion : MonoBehaviour , IPickable
@@ -19,8 +18,10 @@ public class Companion : MonoBehaviour , IPickable
             newValue = Vector3.Min(newValue, m_MaxScale);
             currentScale = newValue;
             this.transform.localScale = currentScale;
+            m_OnSizeChange.Invoke();
         }
     }
+    public UnityEvent m_OnSizeChange;
 
     public Vector3 m_MaxScale;
     public Vector3 m_MinScale;
@@ -29,13 +30,18 @@ public class Companion : MonoBehaviour , IPickable
     private Vector3 m_OriginalScale;
     private bool m_Teleportable;
 
-    void Start()
+    protected virtual void Awake()
     {
         m_Teleportable = true;
         m_OriginalScale = this.transform.localScale;
         m_MinScale = m_OriginalScale * 0.5f;
         m_MaxScale = m_OriginalScale * 2f;
         m_CurrentScale = m_OriginalScale;
+    }
+
+    protected virtual void Start()
+    {
+        m_OnSizeChange.Invoke();
     }
 
     public void SetTeleport(bool l_Activate)

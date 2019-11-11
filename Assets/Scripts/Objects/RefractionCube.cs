@@ -8,38 +8,60 @@ public class RefractionCube : Companion
     public LayerMask m_CollisionLayerMask;
     public LineRenderer m_LineRenderer;
     private bool m_CreateRefraction;
+    private bool m_CubeRefracted;
+
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
+    protected override void Start()
+    {
+        m_OnSizeChange.AddListener(AdaptSize);
+        base.Start();
+    }
+
+    private void AdaptSize()
+    {
+        Vector3 l_SelfScale = m_LineRenderer.transform.localScale;
+        l_SelfScale.z = transform.localScale.z * 3f;
+        m_LineRenderer.transform.localScale = l_SelfScale;
+    }
 
     void Update()
     {
         m_LineRenderer.gameObject.SetActive(m_CreateRefraction);
-        CreateRefraction();
+        m_CreateRefraction = false;
+        m_CubeRefracted = false;
     }
 
-    private void CreateRefraction()
+    public void CreateRefraction()
     {
-        if (!m_CreateRefraction) return;
+        //if (m_CreateRefraction) return;
+        if (m_CubeRefracted) return;
+
+        m_CubeRefracted = true;
+        m_CreateRefraction = true;
+        m_LineRenderer.gameObject.SetActive(m_CreateRefraction);
+
         Vector3 l_EndRaycastPosition = Vector3.forward * m_MaxDistance;
         RaycastHit l_RaycastHit;
+
         if (Physics.Raycast(new Ray(m_LineRenderer.transform.position, m_LineRenderer.transform.forward), out l_RaycastHit, m_MaxDistance, m_CollisionLayerMask.value))
         {
-            l_EndRaycastPosition.z = ;
+            l_EndRaycastPosition = Vector3.forward * l_RaycastHit.distance;
             try
             {
                 if (l_RaycastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
                 {
                     //Reflect ray
-                    l_RaycastHit.collider.GetComponent<RefractionCube>().StartRefracting();
+                    l_RaycastHit.collider.GetComponent<RefractionCube>().CreateRefraction();
                 }
             }
             catch { }
             //Other collisions
         }
-        m_LineRenderer.SetPosition(1, l_EndRaycastPosition);
-        m_CreateRefraction = false;
-    }
 
-    public void StartRefracting()
-    {
-        m_CreateRefraction = true;
+        m_LineRenderer.SetPosition(1, l_EndRaycastPosition);
     }
 }
