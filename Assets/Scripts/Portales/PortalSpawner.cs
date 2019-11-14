@@ -12,6 +12,7 @@ public class PortalSpawner
         m_Direction = -l_HitPoint.normal;
         if (CheckAllPoints(l_Points))
         {
+            l_PortalToSpawn.gameObject.SetActive(true);
             l_PortalToSpawn.SetNewPosition(l_HitPoint);
         }
     }
@@ -27,12 +28,19 @@ public class PortalSpawner
             {
                 if (l_RaycastHit.collider.gameObject.tag != "PrintableWall")
                 {
-                    Debug.Log(i + " returned false");
                     return false;
                 }
             }
             else
             {
+                return false;
+            }
+            Vector3 l_Direction = (l_ValidPoint.transform.position - m_ValidPoints[0].transform.position);
+            l_Ray = new Ray(l_ValidPoint.transform.position, -l_Direction.normalized);
+            Debug.DrawRay(l_ValidPoint.transform.position, -l_Direction.normalized, Color.red, 10f);
+            if (Physics.Raycast(l_Ray, out l_RaycastHit, l_Direction.magnitude, m_PortalLayerMask.value))
+            {
+                //Debug.Log(i + " returned false");
                 return false;
             }
         }

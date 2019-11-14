@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Portal : MonoBehaviour
+public class Portal : MonoBehaviour, IRestartable
 {
     public Portal m_MirrorPortal;
     public Transform m_PlayerCamera;
@@ -21,6 +21,7 @@ public class Portal : MonoBehaviour
     void Start()
     {
         Init();
+        this.gameObject.SetActive(false);
     }
 
     void Update()
@@ -89,7 +90,7 @@ public class Portal : MonoBehaviour
 
         Vector3 l_Position = transform.InverseTransformPoint(l_Object.transform.position);
         l_Object.transform.position = m_MirrorPortal.gameObject.transform.TransformPoint(new Vector3(-l_Position.x, l_Position.y, -l_Position.z));
-        l_Object.transform.position += m_MirrorPortal.gameObject.transform.forward * 0.1f;
+        l_Object.transform.position += m_MirrorPortal.gameObject.transform.forward * 0.05f;
 
         if (l_Object == GameController.Instance.GetPlayerGameObject())
             l_Object.GetComponent<PlayerController>().ForceYaw(l_Object.GetComponent<PlayerController>().GetYaw() - 180 - (transform.eulerAngles.y - m_MirrorPortal.transform.eulerAngles.y));
@@ -110,7 +111,7 @@ public class Portal : MonoBehaviour
         m_PortalCamera.transform.position = m_MirrorPortal.transform.TransformPoint(new Vector3(-l_ReflectedPosition.x, l_ReflectedPosition.y, -l_ReflectedPosition.z));
         m_PortalCamera.transform.forward = m_MirrorPortal.transform.TransformDirection(new Vector3(-l_ReflectedDirection.x, l_ReflectedDirection.y, -l_ReflectedDirection.z));
 
-        m_PortalCamera.nearClipPlane = Vector3.Distance(m_PortalCamera.transform.position, this.transform.position) + m_NearClipOffset;
+        m_PortalCamera.nearClipPlane = m_NearClipOffset;//Vector3.Distance(m_PortalCamera.transform.position, this.transform.position) + m_NearClipOffset;
     }
 
     private void UpdatePortalTexture2()
@@ -124,7 +125,7 @@ public class Portal : MonoBehaviour
         m_MirrorPortal.m_PortalCamera.transform.position = m_MirrorPortal.transform.TransformPoint(l_ReflectedPosition);
         m_MirrorPortal.m_PortalCamera.transform.forward = m_MirrorPortal.transform.TransformDirection(l_ReflectedDirection);
 
-        m_PortalCamera.nearClipPlane = Vector3.Distance(m_PortalCamera.transform.position, this.transform.position) + m_NearClipOffset;
+        m_PortalCamera.nearClipPlane = m_NearClipOffset;//Vector3.Distance(m_PortalCamera.transform.position, this.transform.position) + m_NearClipOffset;
     }
 
     public void SetNewPosition(RaycastHit l_SpawnPoint)
@@ -137,9 +138,27 @@ public class Portal : MonoBehaviour
     public void ObjectInsideCollider(GameObject l_Object, bool isInside)
     {
         if (isInside)
+        {
             m_ObjectsInsideTriggers.Add(l_Object);
+            GameController.Instance.ChangeLayer(l_Object, true);
+        }
         else
+            StartCoroutine(ResetCollisions(l_Object));//m_ObjectsInsideTriggers.Remove(l_Object);
+
+    }
+
+    public IEnumerator ResetCollisions(GameObject l_Object)
+    {
+        yield return null;
+        if (m_MirrorPortal.m_PortalPlane.GetDistanceToPoint(l_Object.transform.position) > 1f)
+        {
+            GameController.Instance.ChangeLayer(l_Object, false);
             m_ObjectsInsideTriggers.Remove(l_Object);
-        GameController.Instance.ChangeLayer(l_Object, isInside);
+        }
+    }
+
+    public void Restart()
+    {
+        this.gameObject.SetActive(false);
     }
 }
