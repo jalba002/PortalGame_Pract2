@@ -232,10 +232,13 @@ public class WeaponScript : MonoBehaviour
                     RaycastHit l_RayHit;
                     if (Physics.Raycast(l_CameraPortalRay, out l_RayHit, m_MaxRange, m_ShootLayerMask.value))
                     {
-                        GameController.Instance.m_PortalCheckerPoint.transform.position = l_RayHit.point + (l_RayHit.normal * 0.01f);
-                        GameController.Instance.m_PortalCheckerPoint.transform.forward = -l_RayHit.normal;
+                        if (l_RayHit.collider.gameObject.tag == "PrintableWall")
+                        {
+                            GameController.Instance.m_PortalCheckerPoint.transform.position = l_RayHit.point + (l_RayHit.normal * 0.05f);
+                            GameController.Instance.m_PortalCheckerPoint.transform.forward = -l_RayHit.normal;
 
-                        PortalSpawner.SpawnPortal(l_Portal, l_RayHit, GameController.Instance.m_PortalCheckersList);
+                            PortalSpawner.SpawnPortal(l_Portal, l_RayHit, GameController.Instance.m_PortalCheckersList);
+                        }
                     }
                     break;
                 default:
@@ -272,7 +275,7 @@ public class WeaponScript : MonoBehaviour
     {
         if (m_Reloading || !m_IsAiming) return;
         m_IsAiming = false;
-        
+
         //m_Animator.SetBool("Aim", false);
         m_StopZoom = ExecuteCoroutine(m_StopZoom, StopZoom());
         soundHasPlayed = false;

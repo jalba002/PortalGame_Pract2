@@ -16,6 +16,8 @@ public class PlayerController : MonoBehaviour
         public bool m_AimingAtPickable;
         public GameObject m_LookingAtThisObject;
 
+        private int m_ObjectOriginalLayer;
+
         public ObjectAttacher()
         {
             m_ObjectAttached = null;
@@ -60,6 +62,8 @@ public class PlayerController : MonoBehaviour
             m_ObjectAttached.useGravity = false;
             m_ObjectAttached.GetComponent<Companion>().SetTeleport(false);
             m_ObjectAttached.isKinematic = true;
+            m_ObjectOriginalLayer = m_ObjectAttached.gameObject.layer;
+            m_ObjectAttached.gameObject.layer = 16;
         }
 
         public void DetachObject(float l_DetachForce = 20f)
@@ -70,6 +74,7 @@ public class PlayerController : MonoBehaviour
             m_ObjectAttached.isKinematic = false;
             m_ObjectAttached.GetComponent<Companion>().SetTeleport(true);
             m_ObjectAttached.AddForce(m_AttachingPosition.forward * l_DetachForce, ForceMode.Impulse);
+            m_ObjectAttached.gameObject.layer = m_ObjectOriginalLayer;
             m_ObjectAttached = null;
         }
 

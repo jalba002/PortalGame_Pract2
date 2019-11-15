@@ -14,6 +14,8 @@ public class Portal : MonoBehaviour, IRestartable
     public bool m_PlayerInsideCollider;
     private bool m_TeleportedThisFrame;
 
+    public LaserPortal m_Laser;
+
     public List<GameObject> m_ObjectsInsideTriggers = new List<GameObject>();
 
     //Private variables.
@@ -161,4 +163,6 @@ public class Portal : MonoBehaviour, IRestartable
     {
         this.gameObject.SetActive(false);
     }
+
+    
 }

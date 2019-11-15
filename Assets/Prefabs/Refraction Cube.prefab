@@ -129,7 +129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4166206155712560
 Transform:
   m_ObjectHideFlags: 1
@@ -189,7 +189,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1127978831824516}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 5.3599896, y: 1.734, z: 4.9}
   m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_Children:
   - {fileID: 4305299172462478}
@@ -475,6 +475,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9f0b6b8a56d674469f3168260be6017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_OnSizeChange:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   m_MaxScale: {x: 0, y: 0, z: 0}
   m_MinScale: {x: 0, y: 0, z: 0}
   m_PickedUp: 0
@@ -523,7 +528,7 @@ LineRenderer:
   - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 2
-    widthMultiplier: 0.07
+    widthMultiplier: 0.1
     widthCurve:
       serializedVersion: 2
       m_Curve:

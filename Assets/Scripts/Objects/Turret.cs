@@ -61,6 +61,10 @@ public class Turret : MonoBehaviour
                 {
                     l_RaycastHit.collider.GetComponent<RefractionCube>().CreateRefraction();
                 }
+                else if(l_RaycastHit.collider.gameObject.GetComponent<LaserPortal>() != null)
+                {
+                    l_RaycastHit.collider.GetComponent<LaserPortal>().SetCollisionPosition(l_RaycastHit.point, m_LineRenderer.transform.forward);
+                }
             }
             catch { }
         }

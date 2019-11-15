@@ -36,9 +36,9 @@ public class PortalSpawner
                 return false;
             }
             Vector3 l_Direction = (l_ValidPoint.transform.position - m_ValidPoints[0].transform.position);
-            l_Ray = new Ray(l_ValidPoint.transform.position, -l_Direction.normalized);
-            Debug.DrawRay(l_ValidPoint.transform.position, -l_Direction.normalized, Color.red, 10f);
-            if (Physics.Raycast(l_Ray, out l_RaycastHit, l_Direction.magnitude, m_PortalLayerMask.value))
+            Ray l_RayNewRay = new Ray(m_ValidPoints[0].transform.position, l_Direction.normalized);
+            Debug.DrawRay(m_ValidPoints[0].transform.position, l_Direction.normalized, Color.red, 1f);
+            if (Physics.Raycast(l_RayNewRay, out l_RaycastHit, l_Direction.magnitude, m_PortalLayerMask.value))
             {
                 //Debug.Log(i + " returned false");
                 return false;
