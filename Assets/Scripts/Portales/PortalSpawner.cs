@@ -4,11 +4,12 @@ using UnityEngine;
 public class PortalSpawner
 {
     private static Vector3 m_Direction;
-    private static LayerMask m_PortalLayerMask;
+    private static LayerMask m_PortalLayerMask = -1;
 
     public static void SpawnPortal(Portal l_PortalToSpawn, RaycastHit l_HitPoint, List<Transform> l_Points)
     {
-        m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_PortalLayerMask;
+        if (m_PortalLayerMask != -1)
+            m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_PortalLayerMask;
         m_Direction = -l_HitPoint.normal;
         if (CheckAllPoints(l_Points))
         {
@@ -45,5 +46,21 @@ public class PortalSpawner
             }
         }
         return true;
+    }
+
+    public static void CreatePortalPreview(GameObject m_PreviewGO, bool l_Enable, RaycastHit l_HitPoint, List<Transform> l_Points)
+    {
+        if (m_PortalLayerMask != -1)
+            m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_PortalLayerMask;
+        if (CheckAllPoints(l_Points))
+        {
+            m_PreviewGO.gameObject.SetActive(true);
+            m_PreviewGO.transform.position = l_HitPoint.point + l_HitPoint.normal * 0.05f;
+            m_PreviewGO.transform.forward = l_HitPoint.normal;
+        }
+        else
+        {
+            m_PreviewGO.gameObject.SetActive(false);
+        }
     }
 }

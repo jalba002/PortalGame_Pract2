@@ -257,6 +257,27 @@ public class WeaponScript : MonoBehaviour
         return false;
     }
 
+    public void CreatePreview()
+    {
+        Ray l_CameraPortalRay = m_GunCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
+        RaycastHit l_RayHit;
+        if (Physics.Raycast(l_CameraPortalRay, out l_RayHit, m_MaxRange, m_ShootLayerMask.value))
+        {
+            if (l_RayHit.collider.gameObject.tag == "PrintableWall")
+            {
+                GameController.Instance.m_PortalCheckerPoint.transform.position = l_RayHit.point + (l_RayHit.normal * 0.05f);
+                GameController.Instance.m_PortalCheckerPoint.transform.forward = -l_RayHit.normal;
+
+                PortalSpawner.CreatePortalPreview(GameController.Instance.m_PortalPreview, true, l_RayHit, GameController.Instance.m_PortalCheckersList);
+            }
+        }
+    }
+
+    public void HidePreview()
+    {
+        GameController.Instance.m_PortalPreview.gameObject.SetActive(false);
+    }
+
     public void Aim()
     {
         if (m_Reloading) return;

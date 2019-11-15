@@ -293,7 +293,18 @@ public class PlayerController : MonoBehaviour
     {
         if (m_EquippedWeapon == null) return;
 
-        if (Input.GetMouseButtonDown(KeysDefinition.m_MouseShootButton))
+        if ((Input.GetMouseButton(KeysDefinition.m_MouseShootButton)|| Input.GetMouseButton(KeysDefinition.m_MouseAimButton) )
+            && !m_ObjectAttacher.m_AttachingObject)
+        {
+            //Create preview
+            m_EquippedWeapon.CreatePreview();
+        }
+        else 
+        {
+            m_EquippedWeapon.HidePreview();
+        }
+
+        if (Input.GetMouseButtonUp(KeysDefinition.m_MouseShootButton))
         {
             if (m_ObjectAttacher.m_AimingAtPickable && !m_ObjectAttacher.m_AttachingObject)
             {
@@ -309,8 +320,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-
-        if (Input.GetMouseButtonDown(KeysDefinition.m_MouseAimButton))
+        if (Input.GetMouseButtonUp(KeysDefinition.m_MouseAimButton))
         {
             if (m_ObjectAttacher.m_AttachingObject)
             {

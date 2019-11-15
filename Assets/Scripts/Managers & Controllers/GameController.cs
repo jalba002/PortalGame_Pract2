@@ -16,6 +16,7 @@ public class GameController : Singleton<GameController>
     public List<Transform> m_PortalCheckersList = new List<Transform>();
     public Portal m_BluePortal;
     public Portal m_OrangePortal;
+    public GameObject m_PortalPreview;
 
     public Transform m_DestroyInstantiatedObjectsParent;
 
