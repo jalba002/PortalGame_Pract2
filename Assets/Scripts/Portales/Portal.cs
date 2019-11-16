@@ -92,7 +92,6 @@ public class Portal : MonoBehaviour, IRestartable
 
         Vector3 l_Position = transform.InverseTransformPoint(l_Object.transform.position);
         l_Object.transform.position = m_MirrorPortal.gameObject.transform.TransformPoint(new Vector3(-l_Position.x, l_Position.y, -l_Position.z));
-        l_Object.transform.position += m_MirrorPortal.gameObject.transform.forward * 0.05f;
 
         if (l_Object == GameController.Instance.GetPlayerGameObject())
             l_Object.GetComponent<PlayerController>().ForceYaw(l_Object.GetComponent<PlayerController>().GetYaw() - 180 - (transform.eulerAngles.y - m_MirrorPortal.transform.eulerAngles.y));
@@ -100,8 +99,10 @@ public class Portal : MonoBehaviour, IRestartable
         {
             Rigidbody l_Rigidbody = l_Object.GetComponent<Rigidbody>();
             Vector3 l_Velocity = transform.InverseTransformDirection(-l_Rigidbody.velocity);
+            l_Velocity = new Vector3(l_Velocity.x, -l_Velocity.y, l_Velocity.z);
             l_Rigidbody.velocity = m_MirrorPortal.gameObject.transform.TransformDirection(l_Velocity);
             Vector3 l_Direction = transform.InverseTransformDirection(-transform.forward);
+            l_Rigidbody.gameObject.transform.forward = l_Direction;
         }
 
         m_TeleportedThisFrame = true;
@@ -151,11 +152,11 @@ public class Portal : MonoBehaviour, IRestartable
 
     public IEnumerator ResetCollisions(GameObject l_Object)
     {
+        m_ObjectsInsideTriggers.Remove(l_Object);
         yield return null;
         if (m_MirrorPortal.m_PortalPlane.GetDistanceToPoint(l_Object.transform.position) > 1f)
         {
             GameController.Instance.ChangeLayer(l_Object, false);
-            m_ObjectsInsideTriggers.Remove(l_Object);
         }
     }
 
@@ -164,5 +165,5 @@ public class Portal : MonoBehaviour, IRestartable
         this.gameObject.SetActive(false);
     }
 
-    
+
 }

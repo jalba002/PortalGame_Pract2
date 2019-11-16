@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
         public GameObject m_LookingAtThisObject;
 
         private int m_ObjectOriginalLayer;
+        private Transform m_Parent;
 
         public ObjectAttacher()
         {
@@ -27,7 +28,10 @@ public class PlayerController : MonoBehaviour
         public void UpdateAttachedObject()
         {
             if (m_ObjectAttached == null) return;
+
+            m_ObjectAttached.gameObject.transform.parent = m_Parent;
             Vector3 l_EulerAngles = m_AttachingPosition.rotation.eulerAngles;
+
             if (m_AttachingObject)
             {
                 Quaternion m_AttachingObjectStartRotation = m_ObjectAttached.transform.rotation;
@@ -54,7 +58,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        public void AttachObject(Rigidbody l_ObjectToAttach)
+        public void AttachObject(Rigidbody l_ObjectToAttach, Transform l_Parent)
         {
             if (m_AttachingObject) return;
             m_AttachingObject = true;
@@ -62,6 +66,7 @@ public class PlayerController : MonoBehaviour
             m_ObjectAttached.useGravity = false;
             m_ObjectAttached.GetComponent<Companion>().SetTeleport(false);
             m_ObjectAttached.isKinematic = true;
+            m_Parent = l_Parent;
             m_ObjectOriginalLayer = m_ObjectAttached.gameObject.layer;
             m_ObjectAttached.gameObject.layer = 16;
         }
@@ -75,6 +80,7 @@ public class PlayerController : MonoBehaviour
             m_ObjectAttached.GetComponent<Companion>().SetTeleport(true);
             m_ObjectAttached.AddForce(m_AttachingPosition.forward * l_DetachForce, ForceMode.Impulse);
             m_ObjectAttached.gameObject.layer = m_ObjectOriginalLayer;
+            m_ObjectAttached.gameObject.transform.parent = null;
             m_ObjectAttached = null;
         }
 
@@ -293,13 +299,13 @@ public class PlayerController : MonoBehaviour
     {
         if (m_EquippedWeapon == null) return;
 
-        if ((Input.GetMouseButton(KeysDefinition.m_MouseShootButton)|| Input.GetMouseButton(KeysDefinition.m_MouseAimButton) )
+        if ((Input.GetMouseButton(KeysDefinition.m_MouseShootButton) || Input.GetMouseButton(KeysDefinition.m_MouseAimButton))
             && !m_ObjectAttacher.m_AttachingObject)
         {
             //Create preview
             m_EquippedWeapon.CreatePreview();
         }
-        else 
+        else
         {
             m_EquippedWeapon.HidePreview();
         }
@@ -308,7 +314,7 @@ public class PlayerController : MonoBehaviour
         {
             if (m_ObjectAttacher.m_AimingAtPickable && !m_ObjectAttacher.m_AttachingObject)
             {
-                m_ObjectAttacher.AttachObject(m_ObjectAttacher.m_LookingAtThisObject.GetComponent<Rigidbody>());
+                m_ObjectAttacher.AttachObject(m_ObjectAttacher.m_LookingAtThisObject.GetComponent<Rigidbody>(), m_PitchControllerTransform);
             }
             else if (m_ObjectAttacher.m_AttachingObject)
             {
