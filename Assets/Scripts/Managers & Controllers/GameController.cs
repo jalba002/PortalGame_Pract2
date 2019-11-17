@@ -76,11 +76,12 @@ public class GameController : Singleton<GameController>
         }
         try
         {
-            Transform[] l_DestroyObjects = m_DestroyInstantiatedObjectsParent.GetComponentsInChildren<Transform>();
-            foreach (Transform T in l_DestroyObjects)
+            Companion[] l_DestroyObjects = m_DestroyInstantiatedObjectsParent.GetComponentsInChildren<Companion>();
+            foreach (Companion T in l_DestroyObjects)
             {
                 Destroy(T.gameObject);
             }
+            l_DestroyObjects = null;
         }
         catch { }
     }

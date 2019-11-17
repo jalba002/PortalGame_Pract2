@@ -4,6 +4,17 @@ using UnityEngine;
 
 public class Portal : MonoBehaviour, IRestartable
 {
+    [System.Serializable]
+    public class MimicObject
+    {
+        public MimicObject(GameObject l_Original, GameObject l_Dummy)
+        {
+            m_Original = l_Original;
+            m_Dummy = l_Dummy;
+        }
+        public GameObject m_Original;
+        public GameObject m_Dummy;
+    }
     public Portal m_MirrorPortal;
     public Transform m_PlayerCamera;
     public Camera m_PortalCamera;
@@ -17,6 +28,7 @@ public class Portal : MonoBehaviour, IRestartable
     public LaserPortal m_Laser;
 
     public List<GameObject> m_ObjectsInsideTriggers = new List<GameObject>();
+    private List<MimicObject> m_MimicableObjects = new List<MimicObject>();
 
     //Private variables.
 
@@ -55,6 +67,10 @@ public class Portal : MonoBehaviour, IRestartable
             {
                 TeleportGameObject(objeto);
             }
+        }
+        foreach (MimicObject l_Dummy in m_MimicableObjects)
+        {
+            MimicPosition(l_Dummy.m_Original, l_Dummy.m_Dummy);
         }
     }
 
@@ -142,17 +158,17 @@ public class Portal : MonoBehaviour, IRestartable
     {
         if (isInside)
         {
-            m_ObjectsInsideTriggers.Add(l_Object);
+            AddAndCreateDummy(l_Object, true);
             GameController.Instance.ChangeLayer(l_Object, true);
         }
         else
-            StartCoroutine(ResetCollisions(l_Object));//m_ObjectsInsideTriggers.Remove(l_Object);
+            StartCoroutine(ResetCollisions(l_Object));
 
     }
 
     public IEnumerator ResetCollisions(GameObject l_Object)
     {
-        m_ObjectsInsideTriggers.Remove(l_Object);
+        AddAndCreateDummy(l_Object, false);
         yield return null;
         if (m_MirrorPortal.m_PortalPlane.GetDistanceToPoint(l_Object.transform.position) > 1f)
         {
@@ -165,5 +181,67 @@ public class Portal : MonoBehaviour, IRestartable
         this.gameObject.SetActive(false);
     }
 
+    private void MimicPosition(GameObject l_Original, GameObject l_Dummy)
+    {
+        Vector3 l_Position = transform.InverseTransformPoint(l_Original.transform.position);
+        l_Dummy.transform.position = m_MirrorPortal.gameObject.transform.TransformPoint(new Vector3(-l_Position.x, l_Position.y, -l_Position.z));
+
+        l_Dummy.transform.rotation = l_Original.transform.rotation;
+        if (l_Original != GameController.Instance.GetPlayerGameObject())
+        {
+            Rigidbody l_Rigidbody = l_Dummy.GetComponent<Rigidbody>();
+            Rigidbody l_OGRigidbody = l_Original.GetComponent<Rigidbody>();
+            Vector3 l_Velocity = transform.InverseTransformDirection(-l_OGRigidbody.velocity);
+            l_Velocity = new Vector3(l_Velocity.x, -l_Velocity.y, l_Velocity.z);
+            l_Rigidbody.velocity = m_MirrorPortal.gameObject.transform.TransformDirection(l_Velocity);
+            Vector3 l_Direction = transform.InverseTransformDirection(transform.forward);
+            l_Rigidbody.gameObject.transform.forward = l_Direction;
+        }
+    }
+
+    private void AddAndCreateDummy(GameObject l_Object, bool l_Add)
+    {
+        if (l_Add)
+        {
+            m_ObjectsInsideTriggers.Add(l_Object);
+            if (l_Object != GameController.Instance.GetPlayerGameObject()) return;
+            foreach (MimicObject m_MimicObject in m_MimicableObjects)
+            {
+                if (m_MimicObject.m_Original == l_Object || l_Object == m_MimicObject.m_Dummy)
+                    return;
+            }
+            GameObject l_Dummy = Instantiate(l_Object, GameController.Instance.m_DestroyInstantiatedObjectsParent);
+            if (l_Object == GameController.Instance.GetPlayerGameObject())
+            {
+                l_Dummy.GetComponentInChildren<PlayerController>().enabled = false;
+                l_Dummy.GetComponentInChildren<WeaponScript>().gameObject.SetActive(false);
+                Camera[] l_DummyCams = l_Dummy.GetComponentsInChildren<Camera>();
+                foreach (Camera cam in l_DummyCams)
+                {
+                    cam.gameObject.SetActive(false);
+                }
+            }
+            else
+            {
+                l_Dummy.GetComponent<Companion>().SetTeleport(false);
+            }
+            m_MimicableObjects.Add(new MimicObject(l_Object, l_Dummy));
+        }
+        else
+        {
+            m_ObjectsInsideTriggers.Remove(l_Object);
+            if (l_Object != GameController.Instance.GetPlayerGameObject()) return;
+            foreach (MimicObject m_MimicObject in m_MimicableObjects)
+            {
+                if (m_MimicObject.m_Original == l_Object || l_Object == m_MimicObject.m_Dummy)
+                {
+                    m_MimicObject.m_Dummy.SetActive(false);
+                    m_MimicableObjects.Remove(m_MimicObject);
+                    return;
+                }
+
+            }
+        }
+    }
 
 }

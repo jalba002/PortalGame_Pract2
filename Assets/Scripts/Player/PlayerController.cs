@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
         {
             if (m_ObjectAttached == null) return;
 
-            m_ObjectAttached.gameObject.transform.parent = m_Parent;
+            //m_ObjectAttached.gameObject.transform.parent = m_Parent;
             Vector3 l_EulerAngles = m_AttachingPosition.rotation.eulerAngles;
 
             if (m_AttachingObject)
