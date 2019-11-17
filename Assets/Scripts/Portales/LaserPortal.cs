@@ -31,23 +31,24 @@ public class LaserPortal : MonoBehaviour
         m_CubeRefracted = true;
         m_AttachedPortal.m_MirrorPortal.m_Laser.m_LineRenderer.enabled = m_CubeRefracted;
 
-        Vector3 l_LocalPosition = -this.gameObject.transform.InverseTransformPoint(l_CollisionPoint);
-        l_LocalPosition = new Vector3(l_LocalPosition.x, -l_LocalPosition.y, l_LocalPosition.z);
-        //l_LocalPosition = -m_AttachedPortal.m_MirrorPortal.m_Laser.transform.TransformPoint(l_LocalPosition);
+        Vector3 l_LocalPosition = this.gameObject.transform.InverseTransformPoint(l_CollisionPoint);
+        l_LocalPosition = new Vector3(-l_LocalPosition.x, l_LocalPosition.y, -l_LocalPosition.z);
 
-        Vector3 l_LocalDirection = -this.gameObject.transform.InverseTransformDirection(l_Direction);
-        l_LocalDirection = new Vector3(l_LocalDirection.x, -l_LocalDirection.y, l_LocalDirection.z);
-        //l_LocalDirection = -m_AttachedPortal.m_MirrorPortal.m_Laser.transform.TransformDirection(l_LocalDirection);
+        Vector3 l_LocalDirection = this.gameObject.transform.InverseTransformDirection(l_Direction);
+        l_LocalDirection = new Vector3(-l_LocalDirection.x, l_LocalDirection.y, -l_LocalDirection.z);
 
         Vector3 l_EndRayCastPosition = this.gameObject.transform.InverseTransformPoint((l_CollisionPoint + l_LocalDirection * m_MaxDistance));
 
         m_AttachedPortal.m_MirrorPortal.m_Laser.m_LineRenderer.SetPosition(0, l_LocalPosition);
 
-        RaycastHit l_RaycastHit;
+        Vector3 l_RayLocalPosition = m_AttachedPortal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
 
-        if (Physics.Raycast(new Ray(l_LocalPosition, l_LocalDirection), out l_RaycastHit, m_MaxDistance, m_CollisionLayerMask.value))
+        RaycastHit l_RaycastHit;
+        Debug.DrawRay(l_RayLocalPosition, -l_Direction * 5f, Color.green);
+        if (Physics.Raycast(new Ray(l_RayLocalPosition, -l_Direction), out l_RaycastHit, m_MaxDistance, m_CollisionLayerMask.value))
         {
-            l_EndRayCastPosition = l_LocalPosition + (l_RaycastHit.point - l_LocalPosition).normalized * l_RaycastHit.distance;
+            Debug.Log(l_RaycastHit.collider.gameObject.name);
+            l_EndRayCastPosition = l_RaycastHit.point;
             try
             {
                 if (l_RaycastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
@@ -61,8 +62,8 @@ public class LaserPortal : MonoBehaviour
                 }
             }
             catch { }
+            l_EndRayCastPosition = m_AttachedPortal.m_MirrorPortal.transform.InverseTransformPoint(l_EndRayCastPosition);
         }
-
         m_AttachedPortal.m_MirrorPortal.m_Laser.m_LineRenderer.SetPosition(1, l_EndRayCastPosition);
 
     }

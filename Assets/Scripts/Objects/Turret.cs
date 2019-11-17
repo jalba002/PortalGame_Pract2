@@ -27,7 +27,7 @@ public class Turret : MonoBehaviour
     public void AdaptSize()
     {
         Vector3 l_SelfScale = m_LineRenderer.transform.localScale;
-        l_SelfScale.z = 1f - (transform.localScale.z - 1f);
+        l_SelfScale.z = 1f - (transform.localScale.z - 1.05f);
         m_LineRenderer.transform.localScale = l_SelfScale;
     }
 

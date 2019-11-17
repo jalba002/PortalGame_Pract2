@@ -49,13 +49,17 @@ public class RefractionCube : Companion
 
         if (Physics.Raycast(new Ray(m_LineRenderer.transform.position, m_LineRenderer.transform.forward), out l_RaycastHit, m_MaxDistance, m_CollisionLayerMask.value))
         {
-            l_EndRaycastPosition = Vector3.forward * l_RaycastHit.distance;
+            l_EndRaycastPosition = Vector3.forward * l_RaycastHit.distance * 1.05f;
             try
             {
                 if (l_RaycastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
                 {
                     //Reflect ray
                     l_RaycastHit.collider.GetComponent<RefractionCube>().CreateRefraction();
+                }
+                else if (l_RaycastHit.collider.gameObject.GetComponent<LaserPortal>() != null)
+                {
+                    l_RaycastHit.collider.GetComponent<LaserPortal>().SetCollisionPosition(l_RaycastHit.point, m_LineRenderer.transform.forward);
                 }
             }
             catch { }
