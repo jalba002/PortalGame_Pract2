@@ -47,7 +47,6 @@ public class LaserPortal : MonoBehaviour
         Debug.DrawRay(l_RayLocalPosition, -l_Direction * 5f, Color.green);
         if (Physics.Raycast(new Ray(l_RayLocalPosition, -l_Direction), out l_RaycastHit, m_MaxDistance, m_CollisionLayerMask.value))
         {
-            Debug.Log(l_RaycastHit.collider.gameObject.name);
             l_EndRayCastPosition = l_RaycastHit.point;
             try
             {
