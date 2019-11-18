@@ -11,7 +11,7 @@ public class GameController : Singleton<GameController>
     }
     public PlayerComponents m_PlayerComponents;
     private GameObject m_PlayerGameObject;
-
+    public CanvasManager m_PlayerCanvasManager;
     public Transform m_PortalCheckerPoint;
     public List<Transform> m_PortalCheckersList = new List<Transform>();
     public Portal m_BluePortal;

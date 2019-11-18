@@ -240,6 +240,7 @@ public class WeaponScript : MonoBehaviour
                             PortalSpawner.SpawnPortal(l_Portal, l_RayHit, GameController.Instance.m_PortalCheckersList, l_SizeChange);
                         }
                     }
+                    GameController.Instance.m_PlayerCanvasManager.UpdateHud();
                     break;
                 default:
                     Debug.Log("Did you forget to set the Shooting type?");
