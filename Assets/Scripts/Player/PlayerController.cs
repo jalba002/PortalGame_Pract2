@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IRestartable
 {
     [System.Serializable]
     public class ObjectAttacher
@@ -180,9 +180,6 @@ public class PlayerController : MonoBehaviour
 
     public Coroutine m_RecoilCoroutine;
     public Coroutine m_WaitToRemoveRecoilCoroutine;
-
-    //[Header("UI Settings")]
-    //public PlayerHUDUpdater m_PlayerHUDUpdater;
 
     void Start()
     {
@@ -500,4 +497,8 @@ public class PlayerController : MonoBehaviour
         return m_Yaw;
     }
 
+    public void Restart()
+    {
+        //Get current checkpoint from the checkpoint manager and sets the new position
+    }
 }

@@ -11,7 +11,7 @@ public class PortalSpawner
         if (m_PortalLayerMask != -1)
             m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_PortalLayerMask;
         m_Direction = -l_HitPoint.normal;
-        if (CheckAllPoints(l_Points))
+        if (CheckAllPoints(l_Points, l_SizeChange))
         {
             l_PortalToSpawn.gameObject.SetActive(true);
             l_PortalToSpawn.SetNewScale(l_PortalToSpawn.m_OriginalScale * l_SizeChange);
@@ -19,7 +19,7 @@ public class PortalSpawner
         }
     }
 
-    private static bool CheckAllPoints(List<Transform> m_ValidPoints)
+    private static bool CheckAllPoints(List<Transform> m_ValidPoints, float l_SizeChange)
     {
         for (int i = 0; i < m_ValidPoints.Count; ++i)
         {
@@ -40,7 +40,7 @@ public class PortalSpawner
             Vector3 l_Direction = (l_ValidPoint.transform.position - m_ValidPoints[0].transform.position);
             Ray l_RayNewRay = new Ray(m_ValidPoints[0].transform.position, l_Direction.normalized);
             Debug.DrawRay(m_ValidPoints[0].transform.position, l_Direction.normalized, Color.red, 1f);
-            if (Physics.Raycast(l_RayNewRay, out l_RaycastHit, l_Direction.magnitude, m_PortalLayerMask.value))
+            if (Physics.Raycast(l_RayNewRay, out l_RaycastHit, l_Direction.magnitude * l_SizeChange, m_PortalLayerMask.value))
             {
                 //Debug.Log(i + " returned false");
                 return false;
@@ -53,7 +53,7 @@ public class PortalSpawner
     {
         if (m_PortalLayerMask != -1)
             m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_PortalLayerMask;
-        if (CheckAllPoints(l_Points))
+        if (CheckAllPoints(l_Points, l_SizeChange))
         {
             m_RedPreview.gameObject.SetActive(false);
             m_GreenPreview.gameObject.SetActive(true);
