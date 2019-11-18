@@ -30,8 +30,36 @@ public class Portal : MonoBehaviour, IRestartable
     public List<GameObject> m_ObjectsInsideTriggers = new List<GameObject>();
     private List<MimicObject> m_MimicableObjects = new List<MimicObject>();
 
-    //Private variables.
 
+    public Vector3 m_MaxScale;
+    public Vector3 m_MinScale;
+
+    public Vector3 m_OriginalScale;
+    private Vector3 currentScale;
+    public Vector3 m_CurrentScale
+    {
+        get
+        {
+            return currentScale;
+        }
+        set
+        {
+            Vector3 newValue = value;
+            newValue = Vector3.Max(newValue, m_MinScale);
+            newValue = Vector3.Min(newValue, m_MaxScale);
+            currentScale = newValue;
+            this.transform.localScale = currentScale;
+        }
+    }
+
+    //Private variables.
+    private void Awake()
+    {
+        m_OriginalScale = this.transform.localScale;
+        m_MinScale = m_OriginalScale * 0.5f;
+        m_MaxScale = m_OriginalScale * 2f;
+        m_CurrentScale = m_OriginalScale;
+    }
     void Start()
     {
         Init();
@@ -41,7 +69,7 @@ public class Portal : MonoBehaviour, IRestartable
     void Update()
     {
         UpdatePortalTexture2();
-        CheckEveryObjectTeleport(); //CheckTeleport(); //Before it was just CheckTeleport();
+        CheckEveryObjectTeleport(); 
     }
 
     public void Init()
@@ -49,6 +77,11 @@ public class Portal : MonoBehaviour, IRestartable
         m_TeleportedThisFrame = false;
         m_PlayerInsideCollider = false;
         m_PortalPlane = new Plane(this.gameObject.transform.forward, this.gameObject.transform.position);
+    }
+
+    public void SetNewScale(Vector3 l_NewScale)
+    {
+        m_CurrentScale = l_NewScale;
     }
 
     private void CheckTeleport() //Kinda Legacy
@@ -119,6 +152,9 @@ public class Portal : MonoBehaviour, IRestartable
             l_Rigidbody.velocity = m_MirrorPortal.gameObject.transform.TransformDirection(l_Velocity);
             Vector3 l_Direction = transform.InverseTransformDirection(-transform.forward);
             l_Rigidbody.gameObject.transform.forward = l_Direction;
+            //Testing of size changes
+
+            l_Object.GetComponent<Companion>().SetNewScale(l_Object.transform.localScale *= (this.m_MirrorPortal.transform.localScale.x / this.gameObject.transform.localScale.x));
         }
 
         m_TeleportedThisFrame = true;

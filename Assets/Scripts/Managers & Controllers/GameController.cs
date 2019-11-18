@@ -17,6 +17,7 @@ public class GameController : Singleton<GameController>
     public Portal m_BluePortal;
     public Portal m_OrangePortal;
     public GameObject m_PortalPreview;
+    public GameObject m_RedPortalPreview;
 
     public Transform m_DestroyInstantiatedObjectsParent;
 

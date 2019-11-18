@@ -82,6 +82,8 @@ public class PlayerController : MonoBehaviour
             m_ObjectAttached.gameObject.layer = m_ObjectOriginalLayer;
             m_ObjectAttached.gameObject.transform.parent = null;
             m_ObjectAttached = null;
+            m_LookingAtThisObject = null;
+            m_AimingAtPickable = false;
         }
 
     }
@@ -91,6 +93,16 @@ public class PlayerController : MonoBehaviour
     private bool m_IsPlayerDead = false;
 
     [Header("Recoil Settings")]
+    private float p_SizeChange;
+    public float m_SizeChange
+    {
+        get { return p_SizeChange; }
+        set
+        {
+            p_SizeChange = Mathf.Clamp(value, 0.5f, 2f);
+        }
+    }
+    private float m_LastMouseInput;
     public bool m_EnableRecoil;
     private bool m_AddedRecoil = false;
     private bool m_Shooting = false;
@@ -174,6 +186,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        m_SizeChange = 1f;
         m_CharacterController = GetComponent<CharacterController>();
         m_Yaw = transform.rotation.eulerAngles.y;
         m_Pitch = m_PitchControllerTransform.localRotation.eulerAngles.x;
@@ -191,7 +204,7 @@ public class PlayerController : MonoBehaviour
         {
             PlayerMovement();
             RegisterWeaponInputs();
-            AnalyzeInteractions();
+            DetectMouseWheelChange();
 #if UNITY_EDITOR
             UnityEditorChecks();
 #endif
@@ -207,6 +220,23 @@ public class PlayerController : MonoBehaviour
         {
             CorrectRecoil();
         }
+    }
+
+    private void DetectMouseWheelChange()
+    {
+        float l_MouseWheel = Input.mouseScrollDelta.y;
+        if (l_MouseWheel == m_LastMouseInput) return;
+        if (l_MouseWheel > 0f)
+        {
+            // scroll up
+            m_SizeChange += 0.1f;
+        }
+        else if (l_MouseWheel < 0f)
+        {
+            m_SizeChange -= 0.1f;
+            // scroll down
+        }
+        m_LastMouseInput = l_MouseWheel;
     }
 
     void CameraMovement()
@@ -303,7 +333,7 @@ public class PlayerController : MonoBehaviour
             && !m_ObjectAttacher.m_AttachingObject)
         {
             //Create preview
-            m_EquippedWeapon.CreatePreview();
+            m_EquippedWeapon.CreatePreview(m_SizeChange);
         }
         else
         {
@@ -312,6 +342,8 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(KeysDefinition.m_MouseShootButton))
         {
+            AnalyzeInteractions();
+
             if (m_ObjectAttacher.m_AimingAtPickable && !m_ObjectAttacher.m_AttachingObject)
             {
                 m_ObjectAttacher.AttachObject(m_ObjectAttacher.m_LookingAtThisObject.GetComponent<Rigidbody>(), m_PitchControllerTransform);
@@ -322,7 +354,7 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                m_EquippedWeapon.Shoot(GameController.Instance.m_BluePortal);
+                m_EquippedWeapon.Shoot(GameController.Instance.m_BluePortal, m_SizeChange);
             }
         }
 
@@ -334,7 +366,7 @@ public class PlayerController : MonoBehaviour
             }
             else if (!m_ObjectAttacher.m_AimingAtPickable)
             {
-                m_EquippedWeapon.Shoot(GameController.Instance.m_OrangePortal);
+                m_EquippedWeapon.Shoot(GameController.Instance.m_OrangePortal, m_SizeChange);
             }
         }
 

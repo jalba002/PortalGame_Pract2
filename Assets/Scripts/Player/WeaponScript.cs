@@ -171,9 +171,9 @@ public class WeaponScript : MonoBehaviour
         transform.localPosition = Vector3.Lerp(transform.localPosition, l_FinalSwayPosition + m_InitialSwayPosition, Time.deltaTime * m_SwaySmoothValue);
     }
 
-    public bool Shoot(Portal l_Portal)
+    public bool Shoot(Portal l_Portal, float l_SizeChange)
     {
-        bool l_ShootThisFrame = TrueShoot(l_Portal);
+        bool l_ShootThisFrame = TrueShoot(l_Portal, l_SizeChange);
         if (l_ShootThisFrame)
         {
             //Do stuff
@@ -186,7 +186,7 @@ public class WeaponScript : MonoBehaviour
         return l_ShootThisFrame;
     }
 
-    private bool TrueShoot(Portal l_Portal)
+    private bool TrueShoot(Portal l_Portal, float l_SizeChange)
     {
         if (CanShoot())
         {
@@ -237,7 +237,7 @@ public class WeaponScript : MonoBehaviour
                             GameController.Instance.m_PortalCheckerPoint.transform.position = l_RayHit.point + (l_RayHit.normal * 0.05f);
                             GameController.Instance.m_PortalCheckerPoint.transform.forward = -l_RayHit.normal;
 
-                            PortalSpawner.SpawnPortal(l_Portal, l_RayHit, GameController.Instance.m_PortalCheckersList);
+                            PortalSpawner.SpawnPortal(l_Portal, l_RayHit, GameController.Instance.m_PortalCheckersList, l_SizeChange);
                         }
                     }
                     break;
@@ -257,25 +257,28 @@ public class WeaponScript : MonoBehaviour
         return false;
     }
 
-    public void CreatePreview()
+    public void CreatePreview(float l_SizeChange)
     {
         Ray l_CameraPortalRay = m_GunCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
         RaycastHit l_RayHit;
         if (Physics.Raycast(l_CameraPortalRay, out l_RayHit, m_MaxRange, m_ShootLayerMask.value))
         {
-            if (l_RayHit.collider.gameObject.tag == "PrintableWall")
-            {
-                GameController.Instance.m_PortalCheckerPoint.transform.position = l_RayHit.point + (l_RayHit.normal * 0.05f);
-                GameController.Instance.m_PortalCheckerPoint.transform.forward = -l_RayHit.normal;
+            //if (l_RayHit.collider.gameObject.tag == "PrintableWall")
+            //{
+            GameController.Instance.m_PortalCheckerPoint.transform.position = l_RayHit.point + (l_RayHit.normal * 0.05f);
+            GameController.Instance.m_PortalCheckerPoint.transform.forward = -l_RayHit.normal;
 
-                PortalSpawner.CreatePortalPreview(GameController.Instance.m_PortalPreview, true, l_RayHit, GameController.Instance.m_PortalCheckersList);
-            }
+            PortalSpawner.CreatePortalPreview(GameController.Instance.m_PortalPreview, GameController.Instance.m_RedPortalPreview, l_RayHit, GameController.Instance.m_PortalCheckersList, l_SizeChange);
+            //}
         }
+        else
+            HidePreview();
     }
 
     public void HidePreview()
     {
         GameController.Instance.m_PortalPreview.gameObject.SetActive(false);
+        GameController.Instance.m_RedPortalPreview.gameObject.SetActive(false);
     }
 
     public void Aim()

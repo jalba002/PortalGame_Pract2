@@ -6,7 +6,7 @@ public class PortalSpawner
     private static Vector3 m_Direction;
     private static LayerMask m_PortalLayerMask = -1;
 
-    public static void SpawnPortal(Portal l_PortalToSpawn, RaycastHit l_HitPoint, List<Transform> l_Points)
+    public static void SpawnPortal(Portal l_PortalToSpawn, RaycastHit l_HitPoint, List<Transform> l_Points, float l_SizeChange)
     {
         if (m_PortalLayerMask != -1)
             m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_PortalLayerMask;
@@ -14,6 +14,7 @@ public class PortalSpawner
         if (CheckAllPoints(l_Points))
         {
             l_PortalToSpawn.gameObject.SetActive(true);
+            l_PortalToSpawn.SetNewScale(l_PortalToSpawn.m_OriginalScale * l_SizeChange);
             l_PortalToSpawn.SetNewPosition(l_HitPoint);
         }
     }
@@ -48,19 +49,25 @@ public class PortalSpawner
         return true;
     }
 
-    public static void CreatePortalPreview(GameObject m_PreviewGO, bool l_Enable, RaycastHit l_HitPoint, List<Transform> l_Points)
+    public static void CreatePortalPreview(GameObject m_GreenPreview, GameObject m_RedPreview, RaycastHit l_HitPoint, List<Transform> l_Points, float l_SizeChange)
     {
         if (m_PortalLayerMask != -1)
             m_PortalLayerMask = GameController.Instance.GetPlayerGameObject().GetComponent<PlayerController>().m_EquippedWeapon.m_PortalLayerMask;
         if (CheckAllPoints(l_Points))
         {
-            m_PreviewGO.gameObject.SetActive(true);
-            m_PreviewGO.transform.position = l_HitPoint.point + l_HitPoint.normal * 0.05f;
-            m_PreviewGO.transform.forward = l_HitPoint.normal;
+            m_RedPreview.gameObject.SetActive(false);
+            m_GreenPreview.gameObject.SetActive(true);
+            m_GreenPreview.gameObject.transform.localScale = Vector3.one * l_SizeChange;
+            m_GreenPreview.transform.position = l_HitPoint.point + l_HitPoint.normal * 0.05f;
+            m_GreenPreview.transform.forward = l_HitPoint.normal;
         }
         else
         {
-            m_PreviewGO.gameObject.SetActive(false);
+            m_GreenPreview.gameObject.SetActive(false);
+            m_RedPreview.gameObject.SetActive(true);
+            m_RedPreview.gameObject.transform.localScale = Vector3.one * l_SizeChange;
+            m_RedPreview.transform.position = l_HitPoint.point + l_HitPoint.normal * 0.05f;
+            m_RedPreview.transform.forward = l_HitPoint.normal;
         }
     }
 }
