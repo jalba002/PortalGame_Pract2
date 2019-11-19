@@ -10,16 +10,15 @@ public class CanvasManager : MonoBehaviour
 
     public void UpdateHud()
     {
-        Debug.Log("Updating HUD");
         if (GameController.Instance.m_OrangePortal.gameObject.activeSelf && GameController.Instance.m_BluePortal.gameObject.activeSelf)
         {
             m_Crosshair.sprite = m_HUDImages[0];
         }
-        else if (!GameController.Instance.m_OrangePortal.gameObject.activeSelf)
+        else if (!GameController.Instance.m_OrangePortal.gameObject.activeSelf && GameController.Instance.m_BluePortal.gameObject.activeSelf)
         {
             m_Crosshair.sprite = m_HUDImages[1];
         }
-        else if (!GameController.Instance.m_BluePortal.gameObject.activeSelf)
+        else if (!GameController.Instance.m_BluePortal.gameObject.activeSelf && GameController.Instance.m_OrangePortal.gameObject.activeSelf)
         {
             m_Crosshair.sprite = m_HUDImages[2];
         }

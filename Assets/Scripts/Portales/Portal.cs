@@ -180,7 +180,7 @@ public class Portal : MonoBehaviour, IRestartable
         m_MirrorPortal.m_PortalCamera.transform.position = m_MirrorPortal.transform.TransformPoint(l_ReflectedPosition);
         m_MirrorPortal.m_PortalCamera.transform.forward = m_MirrorPortal.transform.TransformDirection(l_ReflectedDirection);
 
-        m_PortalCamera.nearClipPlane = m_NearClipOffset;//Vector3.Distance(m_PortalCamera.transform.position, this.transform.position) + m_NearClipOffset;
+        m_PortalCamera.nearClipPlane = Vector3.Distance(m_PortalCamera.transform.position, this.transform.position); //+ m_NearClipOffset;
     }
 
     public void SetNewPosition(RaycastHit l_SpawnPoint)

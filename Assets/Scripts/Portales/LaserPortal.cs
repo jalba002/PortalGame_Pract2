@@ -20,51 +20,68 @@ public class LaserPortal : MonoBehaviour
 
     private void Update()
     {
-        m_AttachedPortal.m_MirrorPortal.m_Laser.m_LineRenderer.enabled = m_CubeRefracted;
-        m_CubeRefracted = false;
+        m_LineRenderer.enabled = m_CubeRefracted;
+        if (m_CubeRefracted)
+        {
+            m_CubeRefracted = false;
+        }
     }
 
-    public void SetCollisionPosition(Vector3 l_CollisionPoint, Vector3 l_Direction)
+    public void Collide(Vector3 l_CollisionPoint, Vector3 l_Direction)
+    {
+        m_AttachedPortal.m_MirrorPortal.m_Laser.CreateRefraction(l_CollisionPoint, l_Direction);
+    }
+
+    public void CreateRefraction(Vector3 l_Position, Vector3 l_Direction) //This is a mess and took me 4+ hours.
     {
         if (m_CubeRefracted) return;
 
-        m_CubeRefracted = true;
-        m_AttachedPortal.m_MirrorPortal.m_Laser.m_LineRenderer.enabled = m_CubeRefracted;
+        this.m_CubeRefracted = true;
+        this.m_LineRenderer.enabled = true;
 
-        Vector3 l_LocalPosition = this.gameObject.transform.InverseTransformPoint(l_CollisionPoint);
-        l_LocalPosition = new Vector3(-l_LocalPosition.x, l_LocalPosition.y, -l_LocalPosition.z);
+        #region Vector3 Declarations
+        Vector3 l_EndRayCastPosition;
+        Vector3 l_CollisionPointOnLocal;
+        Vector3 l_CollisionPointOnWorld;
+        Vector3 l_DirectionOnWorld;
+        #endregion
 
-        Vector3 l_LocalDirection = this.gameObject.transform.InverseTransformDirection(l_Direction);
-        l_LocalDirection = new Vector3(-l_LocalDirection.x, l_LocalDirection.y, -l_LocalDirection.z);
+        l_CollisionPointOnLocal = m_AttachedPortal.m_MirrorPortal.transform.InverseTransformPoint(l_Position);
+        l_CollisionPointOnLocal = new Vector3(-l_CollisionPointOnLocal.x, l_CollisionPointOnLocal.y, -l_CollisionPointOnLocal.z);
 
-        Vector3 l_EndRayCastPosition = this.gameObject.transform.InverseTransformPoint((l_CollisionPoint + l_LocalDirection * m_MaxDistance));
+        m_LineRenderer.SetPosition(0, l_CollisionPointOnLocal);
 
-        m_AttachedPortal.m_MirrorPortal.m_Laser.m_LineRenderer.SetPosition(0, l_LocalPosition);
+        //Setting the starting position!
+        l_EndRayCastPosition = l_CollisionPointOnLocal + l_Direction * m_MaxDistance;
 
-        Vector3 l_RayLocalPosition = m_AttachedPortal.m_MirrorPortal.transform.TransformPoint(l_LocalPosition);
+        //Changing a lot!
+        l_CollisionPointOnWorld = m_AttachedPortal.transform.TransformPoint(l_CollisionPointOnLocal);
+        l_DirectionOnWorld = m_AttachedPortal.m_MirrorPortal.transform.InverseTransformDirection(l_Direction);
+        l_DirectionOnWorld = this.m_AttachedPortal.transform.TransformDirection(l_DirectionOnWorld);
+        l_DirectionOnWorld = new Vector3(-l_DirectionOnWorld.x, l_DirectionOnWorld.y, -l_DirectionOnWorld.z);
+        //Moving from Local to World! For the raycast!
 
-        RaycastHit l_RaycastHit;
-        Debug.DrawRay(l_RayLocalPosition, -l_Direction * 5f, Color.green);
-        if (Physics.Raycast(new Ray(l_RayLocalPosition, -l_Direction), out l_RaycastHit, m_MaxDistance, m_CollisionLayerMask.value))
+        //Time for a Raycast!
+        Ray l_WorldRay = new Ray(l_CollisionPointOnWorld + (l_DirectionOnWorld * 0.1f), l_DirectionOnWorld);
+        RaycastHit l_RayCastHit;
+        if (Physics.Raycast(l_WorldRay, out l_RayCastHit, m_MaxDistance, m_CollisionLayerMask))
         {
-            l_EndRayCastPosition = l_RaycastHit.point;
+            l_EndRayCastPosition = this.gameObject.transform.InverseTransformPoint(l_RayCastHit.point); //The hit in raycast is WORLD, we need it in LOCAL for the LineRenderer!
             try
             {
-                if (l_RaycastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
+                Debug.Log(l_RayCastHit.collider.name);
+                if (l_RayCastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
                 {
-                    //Reflect ray
-                    l_RaycastHit.collider.GetComponent<RefractionCube>().CreateRefraction();
-                }
-                else if (l_RaycastHit.collider.gameObject.GetComponent<Turret>() != null)
-                {
-                    //DESTROY
+                    l_RayCastHit.collider.gameObject.GetComponent<RefractionCube>().CreateRefraction();
                 }
             }
-            catch { }
-            l_EndRayCastPosition = m_AttachedPortal.m_MirrorPortal.transform.InverseTransformPoint(l_EndRayCastPosition);
+            catch
+            {
+                //Fail! But it has to!
+            }
         }
-        m_AttachedPortal.m_MirrorPortal.m_Laser.m_LineRenderer.SetPosition(1, l_EndRayCastPosition);
-
+        //End raycast!
+        m_LineRenderer.SetPosition(1, l_EndRayCastPosition);
     }
 
 }
