@@ -7,7 +7,8 @@ public class ButtonInteractable : InteractableObject
     public enum ButtonMode
     {
         Push_Button,
-        Temp_Button
+        Temp_Button,
+        OnWhileTriggered
     }
     public ButtonMode m_ButtonMode;
 
@@ -16,6 +17,7 @@ public class ButtonInteractable : InteractableObject
     public float m_DelayBetweenActivations;
 
     private Coroutine m_TempButtonCoroutine;
+    private Coroutine m_OnWhileTriggered = null;
 
     public new void Start()
     {
@@ -34,6 +36,10 @@ public class ButtonInteractable : InteractableObject
                 case ButtonMode.Temp_Button:
                     m_TempButtonCoroutine = StartCoroutine(TempButton());
                     break;
+                case ButtonMode.OnWhileTriggered:
+                    if (m_OnWhileTriggered != null) StopAllCoroutines();
+                    m_OnWhileTriggered = StartCoroutine(OnWhileOn());
+                    break;
                 default:
                     break;
             }
@@ -41,7 +47,21 @@ public class ButtonInteractable : InteractableObject
         }
         return false;
     }
-   
+
+    private IEnumerator OnWhileOn()
+    {
+        m_Activated = true;
+        m_AlreadyInteracting = true;
+        TurnedOn.Invoke();
+        yield return null;
+        yield return null;
+        Debug.Log("Off");
+        m_Activated = false;
+        m_AlreadyInteracting = false;
+        TurnedOff.Invoke();
+        m_OnWhileTriggered = null;
+    }
+
     public IEnumerator TempButton()
     {
         m_Activated = true;
@@ -57,7 +77,7 @@ public class ButtonInteractable : InteractableObject
     {
         m_Activated = false;
         m_AlreadyInteracting = false;
-        StopCoroutine(m_TempButtonCoroutine);
+        //StopCoroutine(m_TempButtonCoroutine);
     }
 
     public IEnumerator ActivationCooldown()
@@ -78,7 +98,7 @@ public class ButtonInteractable : InteractableObject
 
     public void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.GetComponent<Companion>() != null || other.gameObject == GameController.Instance.GetPlayerGameObject())
+        if (other.gameObject.GetComponent<Companion>() != null || other.gameObject == GameController.Instance.GetPlayerGameObject())
         {
             if (Interact())
             {
@@ -97,4 +117,8 @@ public class ButtonInteractable : InteractableObject
         }
     }
 
+    public bool IsActivated()
+    {
+        return m_Activated;
+    }
 }

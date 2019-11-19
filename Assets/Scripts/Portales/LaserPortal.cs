@@ -9,6 +9,8 @@ public class LaserPortal : MonoBehaviour
     public float m_MaxDistance;
     public LayerMask m_CollisionLayerMask;
     public LineRenderer m_LineRenderer;
+
+    private ButtonInteractable m_LastButtonHit = null;
     private bool m_CreateRefraction;
     private bool m_CubeRefracted;
 
@@ -24,6 +26,12 @@ public class LaserPortal : MonoBehaviour
         if (m_CubeRefracted)
         {
             m_CubeRefracted = false;
+            if(!m_CubeRefracted && m_LastButtonHit != null && m_CreateRefraction)
+            {
+                m_LastButtonHit.ForceStop();
+                m_LastButtonHit = null;
+            }
+            m_CreateRefraction = false;
         }
     }
 
@@ -36,6 +44,7 @@ public class LaserPortal : MonoBehaviour
     {
         if (m_CubeRefracted) return;
 
+        this.m_CreateRefraction = true;
         this.m_CubeRefracted = true;
         this.m_LineRenderer.enabled = true;
 
@@ -69,10 +78,19 @@ public class LaserPortal : MonoBehaviour
             l_EndRayCastPosition = this.gameObject.transform.InverseTransformPoint(l_RayCastHit.point); //The hit in raycast is WORLD, we need it in LOCAL for the LineRenderer!
             try
             {
-                Debug.Log(l_RayCastHit.collider.name);
                 if (l_RayCastHit.collider.gameObject.GetComponent<RefractionCube>() != null)
                 {
                     l_RayCastHit.collider.gameObject.GetComponent<RefractionCube>().CreateRefraction();
+                }
+                if (l_RayCastHit.collider.gameObject.GetComponent<ButtonInteractable>() != null)
+                {
+                    m_LastButtonHit = l_RayCastHit.collider.gameObject.GetComponent<ButtonInteractable>();
+                    m_LastButtonHit.Interact();
+                }
+                else if (m_LastButtonHit != null)
+                {
+                    m_LastButtonHit.ForceStop();
+                    m_LastButtonHit = null;
                 }
             }
             catch

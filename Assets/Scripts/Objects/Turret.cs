@@ -9,7 +9,9 @@ public class Turret : MonoBehaviour
     public float m_MaxDistance;
     public float m_AngleLaserActive;
 
+    private ButtonInteractable m_LastButtonHit = null;
     private float l_DotAngleLaserActive;
+
     private bool rayActive;
     public bool l_RayActive
     {
@@ -61,10 +63,21 @@ public class Turret : MonoBehaviour
                 {
                     l_RaycastHit.collider.GetComponent<RefractionCube>().CreateRefraction();
                 }
-                else if(l_RaycastHit.collider.gameObject.GetComponent<LaserPortal>() != null)
+                else if (l_RaycastHit.collider.gameObject.GetComponent<LaserPortal>() != null)
                 {
                     l_RaycastHit.collider.GetComponent<LaserPortal>().Collide(l_RaycastHit.point, this.gameObject.transform.forward);
                 }
+                if (l_RaycastHit.collider.gameObject.GetComponent<ButtonInteractable>() != null)
+                {
+                    m_LastButtonHit = l_RaycastHit.collider.gameObject.GetComponent<ButtonInteractable>();
+                    m_LastButtonHit.Interact();
+                }
+                else if (m_LastButtonHit != null)
+                {
+                    m_LastButtonHit.ForceStop();
+                    m_LastButtonHit = null;
+                }
+
             }
             catch { }
         }
