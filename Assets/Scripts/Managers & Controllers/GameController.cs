@@ -19,6 +19,8 @@ public class GameController : Singleton<GameController>
     public GameObject m_PortalPreview;
     public GameObject m_RedPortalPreview;
 
+    public Checkpoint[] m_AreaCheckpoints;
+
     public Transform m_DestroyInstantiatedObjectsParent;
 
     [HideInInspector] public List<IRestartable> m_RestartableObjects;
@@ -26,10 +28,6 @@ public class GameController : Singleton<GameController>
     private void Awake()
     {
         m_PlayerGameObject = FindObjectOfType<PlayerController>().transform.gameObject;
-    }
-
-    void Start()
-    {
         AddAllRestartableObjects();
         m_PlayerComponents = new PlayerComponents();
         foreach (Transform T in m_PortalCheckerPoint.GetComponentsInChildren<Transform>())
@@ -46,15 +44,22 @@ public class GameController : Singleton<GameController>
         {
             m_RestartableObjects.Add(res);
         }
+        UpdateRestartablesPositions();
     }
 
+#if UNITY_EDITOR
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.K))
         {
             RestartAllObjects();
         }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            RetryGame();
+        }
     }
+#endif
 
     public GameObject GetPlayerGameObject()
     {
@@ -85,5 +90,24 @@ public class GameController : Singleton<GameController>
             l_DestroyObjects = null;
         }
         catch { }
+    }
+
+    public void PlayerDied()
+    {
+        //Show menu of playerdied.
+    }
+
+    public void RetryGame()
+    {
+        CheckPointManager.SetNewCheckpoint(m_AreaCheckpoints[0]);
+        RestartAllObjects();
+    }
+
+    public void UpdateRestartablesPositions()
+    {
+        foreach (IRestartable l_Object in m_RestartableObjects)
+        {
+            l_Object.UpdateValues();
+        }
     }
 }

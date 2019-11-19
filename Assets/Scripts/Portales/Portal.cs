@@ -52,6 +52,12 @@ public class Portal : MonoBehaviour, IRestartable
         }
     }
 
+    #region Interfaces
+    public bool m_Activated { get; set; }
+    public Vector3 m_InitialPosition { get; set; }
+    public Quaternion m_InitialRotation { get; set; }
+    #endregion
+
     //Private variables.
     private void Awake()
     {
@@ -64,12 +70,13 @@ public class Portal : MonoBehaviour, IRestartable
     {
         Init();
         this.gameObject.SetActive(false);
+        GameController.Instance.m_PlayerCanvasManager.UpdateHud();
     }
 
     void Update()
     {
         UpdatePortalTexture2();
-        CheckEveryObjectTeleport(); 
+        CheckEveryObjectTeleport();
     }
 
     public void Init()
@@ -214,7 +221,10 @@ public class Portal : MonoBehaviour, IRestartable
 
     public void Restart()
     {
+        this.gameObject.transform.position = m_InitialPosition;
+        this.gameObject.transform.rotation = m_InitialRotation;
         this.gameObject.SetActive(false);
+        GameController.Instance.m_PlayerCanvasManager.UpdateHud();
     }
 
     private void MimicPosition(GameObject l_Original, GameObject l_Dummy)
@@ -275,9 +285,13 @@ public class Portal : MonoBehaviour, IRestartable
                     m_MimicableObjects.Remove(m_MimicObject);
                     return;
                 }
-
             }
         }
     }
 
+    public void UpdateValues()
+    {
+        m_InitialPosition = this.gameObject.transform.position;
+        m_InitialRotation = this.gameObject.transform.rotation;
+    }
 }

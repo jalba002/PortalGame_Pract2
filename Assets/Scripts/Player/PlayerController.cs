@@ -4,6 +4,7 @@ using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour, IRestartable
 {
+    #region Object Attacher
     [System.Serializable]
     public class ObjectAttacher
     {
@@ -66,7 +67,6 @@ public class PlayerController : MonoBehaviour, IRestartable
             m_ObjectAttached.useGravity = false;
             m_ObjectAttached.GetComponent<Companion>().SetTeleport(false);
             m_ObjectAttached.isKinematic = true;
-            m_Parent = l_Parent;
             m_ObjectOriginalLayer = m_ObjectAttached.gameObject.layer;
             m_ObjectAttached.gameObject.layer = 16;
         }
@@ -80,7 +80,6 @@ public class PlayerController : MonoBehaviour, IRestartable
             m_ObjectAttached.GetComponent<Companion>().SetTeleport(true);
             m_ObjectAttached.AddForce(m_AttachingPosition.forward * l_DetachForce, ForceMode.Impulse);
             m_ObjectAttached.gameObject.layer = m_ObjectOriginalLayer;
-            m_ObjectAttached.gameObject.transform.parent = null;
             m_ObjectAttached = null;
             m_LookingAtThisObject = null;
             m_AimingAtPickable = false;
@@ -88,10 +87,12 @@ public class PlayerController : MonoBehaviour, IRestartable
 
     }
     public ObjectAttacher m_ObjectAttacher = new ObjectAttacher();
+    #endregion
 
     private UnityEvent m_UpdateTick = new UnityEvent();
     private bool m_IsPlayerDead = false;
 
+    #region Recoil Settings
     [Header("Recoil Settings")]
     private float p_SizeChange;
     public float m_SizeChange
@@ -102,6 +103,9 @@ public class PlayerController : MonoBehaviour, IRestartable
             p_SizeChange = Mathf.Clamp(value, 0.5f, 2f);
         }
     }
+
+
+
     private float m_LastMouseInput;
     public bool m_EnableRecoil;
     private bool m_AddedRecoil = false;
@@ -109,8 +113,16 @@ public class PlayerController : MonoBehaviour, IRestartable
     [HideInInspector] public float m_AccumulatedRecoil;
     [HideInInspector] public bool m_RemovingRecoil;
     [Range(0f, 1f)] public float m_RecoilRecoverySpeed;
+    #endregion
 
+    #region Interactable Settings
+    [Header("Interactable Settings")]
+    public LayerMask m_InteractableLayers;
+    public float m_InteractionRange;
+    public GameObject m_InteractionScreenPanel;
+    #endregion
 
+    #region Camera
     [Header("Camera Settings")]
     public float m_YawRotationalSpeed = 360.0f;
     public float m_PitchRotationalSpeed = 180.0f;
@@ -118,10 +130,6 @@ public class PlayerController : MonoBehaviour, IRestartable
     public float m_MaxPitch = 50.0f;
     public Transform m_PitchControllerTransform;
 
-    [Header("Interactable Settings")]
-    public LayerMask m_InteractableLayers;
-    public float m_InteractionRange;
-    public GameObject m_InteractionScreenPanel;
 
     [Header("Misc Camera Settings")]
     public Camera m_RenderCamera;
@@ -131,11 +139,9 @@ public class PlayerController : MonoBehaviour, IRestartable
     public bool m_AimLocked = false;
     float m_Yaw;
     float m_Pitch;
+    #endregion
 
-    [Header("Movement")]
-    CharacterController m_CharacterController;
-    public float m_Speed = 10.0f;
-
+    #region Keybindings
     [System.Serializable]
     public class KeyBindings
     {
@@ -159,16 +165,26 @@ public class PlayerController : MonoBehaviour, IRestartable
     public KeyBindings KeysDefinition;
     [Header("Weapon Settings")]
     public WeaponScript m_EquippedWeapon;
+    #endregion
 
+    #region Jump Settings
     [Header("Jumping Settings")]
     public float m_JumpSpeed;
     private bool m_OnGround = false;
     private float m_VerticalSpeed = 0.0f;
+    #endregion
+
+    #region Speed Settings
+    [Header("Movement")]
+    CharacterController m_CharacterController;
+    public float m_Speed = 10.0f;
 
     [Header("Running Settings")]
     [Range(1.0f, 2.0f)] public float m_FastSpeedMultiplier;
     [Range(1.0f, 2.0f)] public float m_OnAirSpeedMultiplier;
+    #endregion
 
+    #region Audio Settings
     // Components Area
     private AudioSource m_AudioSource;
 
@@ -177,10 +193,18 @@ public class PlayerController : MonoBehaviour, IRestartable
     private AudioClip m_WalkingSound;
     [SerializeField]
     private AudioClip m_RunningSound;
+    #endregion
 
     public Coroutine m_RecoilCoroutine;
     public Coroutine m_WaitToRemoveRecoilCoroutine;
 
+    #region Interfaces
+    public bool m_Activated { get; set; }
+    public Vector3 m_InitialPosition { get; set; }
+    public Quaternion m_InitialRotation { get; set; }
+    #endregion
+
+    #region Unity Methods
     void Start()
     {
         m_SizeChange = 1f;
@@ -218,6 +242,7 @@ public class PlayerController : MonoBehaviour, IRestartable
             CorrectRecoil();
         }
     }
+    #endregion
 
     private void DetectMouseWheelChange()
     {
@@ -240,28 +265,36 @@ public class PlayerController : MonoBehaviour, IRestartable
     {
         if (m_AngleLocked) return;
 
+        #region Yaw
         float l_MouseAxisX = Input.GetAxis("Mouse X");
         m_Yaw -= l_MouseAxisX * m_YawRotationalSpeed * Time.deltaTime * (m_InvertedYaw ? 1 : -1);
+        #endregion
 
+        #region Pitch
         float l_MouseAxisY = Input.GetAxis("Mouse Y");
 
         m_Pitch -= (l_MouseAxisY * m_PitchRotationalSpeed * Time.deltaTime * (m_InvertedPitch ? -1 : 1));
         m_Pitch = Mathf.Clamp(m_Pitch, m_MinPitch, m_MaxPitch);
+        #endregion
 
+        #region Setting
         transform.rotation = Quaternion.Euler(0.0f, m_Yaw, 0.0f);
         m_PitchControllerTransform.localRotation = Quaternion.Euler(m_Pitch, 0.0f, 0.0f);
-
+        #endregion
     }
 
     void PlayerMovement()
     {
+        #region Calculations
         Vector3 l_Movement = Vector3.zero;
         //Movement Calculations and stuff that could serve if you are on your own engine. 
         float l_YawInRadians = m_Yaw * Mathf.Deg2Rad;
         float l_Yaw90InRadians = (m_Yaw + 90.0f) * Mathf.Deg2Rad;
         Vector3 l_Forward = new Vector3(Mathf.Sin(l_YawInRadians), 0.0f, Mathf.Cos(l_YawInRadians));
         Vector3 l_Right = new Vector3(Mathf.Sin(l_Yaw90InRadians), 0.0f, Mathf.Cos(l_Yaw90InRadians));
+        #endregion
 
+        #region Key Analysis
         if (Input.GetKey(KeysDefinition.m_UpKeyCode))
             l_Movement = l_Forward;
         else if (Input.GetKey(KeysDefinition.m_DownKeyCode))
@@ -285,12 +318,17 @@ public class PlayerController : MonoBehaviour, IRestartable
         {
             l_SpeedMultiplier = m_OnAirSpeedMultiplier;
         }
+        #endregion
 
+        #region Apply Movement
         l_Movement.Normalize();
         l_Movement = l_Movement * Time.deltaTime * m_Speed * l_SpeedMultiplier;
 
         m_VerticalSpeed += Physics.gravity.y * Time.deltaTime;
         l_Movement.y = m_VerticalSpeed * Time.deltaTime;
+        #endregion
+
+        #region Collision Flags
 
         CollisionFlags l_CollisionFlags = m_CharacterController.Move(l_Movement);
 
@@ -304,28 +342,13 @@ public class PlayerController : MonoBehaviour, IRestartable
 
         if ((l_CollisionFlags & CollisionFlags.Above) != 0 && m_VerticalSpeed > 0.0f)
             m_VerticalSpeed = 0.0f;
+        #endregion
     }
-
-#if UNITY_EDITOR
-    private void UnityEditorChecks()
-    {
-        if (Input.GetKeyDown(KeysDefinition.m_DebugLockAngleKeyCode))
-            m_AngleLocked = !m_AngleLocked;
-        if (Input.GetKeyDown(KeysDefinition.m_DebugLockKeyCode))
-        {
-            if (Cursor.lockState == CursorLockMode.Locked)
-                Cursor.lockState = CursorLockMode.None;
-            else
-                Cursor.lockState = CursorLockMode.Locked;
-            m_AimLocked = Cursor.lockState == CursorLockMode.Locked;
-        }
-    }
-#endif
 
     private void RegisterWeaponInputs()
     {
         if (m_EquippedWeapon == null) return;
-
+        #region Attach Object
         if ((Input.GetMouseButton(KeysDefinition.m_MouseShootButton) || Input.GetMouseButton(KeysDefinition.m_MouseAimButton))
             && !m_ObjectAttacher.m_AttachingObject)
         {
@@ -336,7 +359,9 @@ public class PlayerController : MonoBehaviour, IRestartable
         {
             m_EquippedWeapon.HidePreview();
         }
+        #endregion
 
+        #region Blue Portal
         if (Input.GetMouseButtonUp(KeysDefinition.m_MouseShootButton))
         {
             AnalyzeInteractions();
@@ -354,7 +379,9 @@ public class PlayerController : MonoBehaviour, IRestartable
                 m_EquippedWeapon.Shoot(GameController.Instance.m_BluePortal, m_SizeChange);
             }
         }
+        #endregion
 
+        #region Orange Portal
         if (Input.GetMouseButtonUp(KeysDefinition.m_MouseAimButton))
         {
             if (m_ObjectAttacher.m_AttachingObject)
@@ -366,18 +393,24 @@ public class PlayerController : MonoBehaviour, IRestartable
                 m_EquippedWeapon.Shoot(GameController.Instance.m_OrangePortal, m_SizeChange);
             }
         }
+        #endregion
 
+        #region Aim
         if (Input.GetKeyDown(KeysDefinition.m_AimButton))
             m_EquippedWeapon.Aim();
         else if (Input.GetKeyUp(KeysDefinition.m_AimButton))
             m_EquippedWeapon.StopAiming();
+        #endregion
 
-        if (Input.GetKeyDown(KeysDefinition.m_ReloadKeyCode))
-            m_EquippedWeapon.Reload();
+        #region Reload
+        /*if (Input.GetKeyDown(KeysDefinition.m_ReloadKeyCode))
+            m_EquippedWeapon.Reload();*/
+        #endregion
     }
 
     private void AnalyzeInteractions()
     {
+        #region Raycast
         Ray l_CameraRay = m_RenderCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0.0f));
         RaycastHit l_RaycastHit;
         Companion l_InteractableObject;
@@ -406,8 +439,10 @@ public class PlayerController : MonoBehaviour, IRestartable
                 return;
             }
         }
+        #endregion
     }
 
+    #region Recoil Management
     public void CorrectRecoil()
     {
         if (m_Shooting && m_AddedRecoil)
@@ -462,7 +497,9 @@ public class PlayerController : MonoBehaviour, IRestartable
         if (!m_AddedRecoil) m_AddedRecoil = true;
         m_Pitch -= value;
     }
+    #endregion
 
+    #region Sound
     private void PlayFootstepSounds()
     {
         if (m_OnGround)
@@ -481,12 +518,20 @@ public class PlayerController : MonoBehaviour, IRestartable
             }
         }
     }
+    #endregion
 
     public void SetPlayerDead()
     {
-
+        //Playsomething or menu? Or better put it into the gamcontroller
+        m_IsPlayerDead = true;
     }
 
+    public void SetPlayerAlive()
+    {
+        m_IsPlayerDead = false;
+    }
+
+    #region Getters and Setters
     public void ForceYaw(float l_Value)
     {
         m_Yaw = l_Value;
@@ -496,9 +541,38 @@ public class PlayerController : MonoBehaviour, IRestartable
     {
         return m_Yaw;
     }
+    #endregion
 
+    #region Interface Methods
     public void Restart()
     {
         //Get current checkpoint from the checkpoint manager and sets the new position
+        this.gameObject.transform.position = CheckPointManager.GetCurrentCheckPoint();
     }
+
+    public void UpdateValues()
+    {
+
+    }
+    #endregion
+
+#if UNITY_EDITOR
+    #region Mouse Locks
+    private void UnityEditorChecks()
+    {
+        if (Input.GetKeyDown(KeysDefinition.m_DebugLockAngleKeyCode))
+            m_AngleLocked = !m_AngleLocked;
+        if (Input.GetKeyDown(KeysDefinition.m_DebugLockKeyCode))
+        {
+            if (Cursor.lockState == CursorLockMode.Locked)
+                Cursor.lockState = CursorLockMode.None;
+            else
+                Cursor.lockState = CursorLockMode.Locked;
+            m_AimLocked = Cursor.lockState == CursorLockMode.Locked;
+        }
+    }
+
+
+    #endregion
+#endif
 }

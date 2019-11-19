@@ -67,10 +67,14 @@ public class Turret : MonoBehaviour
                 {
                     l_RaycastHit.collider.GetComponent<LaserPortal>().Collide(l_RaycastHit.point, this.gameObject.transform.forward);
                 }
-                if (l_RaycastHit.collider.gameObject.GetComponent<ButtonInteractable>() != null)
+                else if (l_RaycastHit.collider.gameObject.GetComponent<ButtonInteractable>() != null)
                 {
                     m_LastButtonHit = l_RaycastHit.collider.gameObject.GetComponent<ButtonInteractable>();
                     m_LastButtonHit.Interact();
+                }
+                else if (l_RaycastHit.collider.gameObject.GetComponent<PlayerController>() != null)
+                {
+                    l_RaycastHit.collider.gameObject.GetComponent<IDamageable>().DealDamage(999, l_RaycastHit.collider);
                 }
                 else if (m_LastButtonHit != null)
                 {

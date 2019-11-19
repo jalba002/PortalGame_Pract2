@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CompanionSpawner : MonoBehaviour
 {
@@ -10,7 +8,6 @@ public class CompanionSpawner : MonoBehaviour
     public void SpawnCompanion()
     {
         var l_SpawnedObject = Instantiate(m_CompanionPrefab, m_SpawnPosition.position, m_SpawnPosition.rotation, GameController.Instance.m_DestroyInstantiatedObjectsParent);
-        var Objetico = l_SpawnedObject.GetComponent<IRestartable>();
     }
 
 }

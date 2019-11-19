@@ -21,6 +21,13 @@ public class Companion : MonoBehaviour, IPickable, IRestartable
             m_OnSizeChange.Invoke();
         }
     }
+
+    #region Interfaces
+    public bool m_Activated { get; set; }
+    public Vector3 m_InitialPosition { get; set; }
+    public Quaternion m_InitialRotation { get; set; }
+    #endregion
+
     public UnityEvent m_OnSizeChange;
 
     public Vector3 m_MaxScale;
@@ -32,19 +39,9 @@ public class Companion : MonoBehaviour, IPickable, IRestartable
 
     private Rigidbody m_Rigidbody;
 
-    [Header("Restart Properties")]
-    Vector3 m_OriginalPosition;
-    Quaternion m_OriginalRotation;
-    bool m_OriginallySetActive;
-
-
     protected virtual void Awake()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
-
-        m_OriginalPosition = this.gameObject.transform.position;
-        m_OriginalRotation = this.gameObject.transform.rotation;
-        m_OriginallySetActive = this.gameObject.activeSelf;
 
         m_Teleportable = true;
         m_OriginalScale = this.transform.localScale;
@@ -75,9 +72,18 @@ public class Companion : MonoBehaviour, IPickable, IRestartable
 
     public void Restart()
     {
-        this.gameObject.transform.position = m_OriginalPosition;
-        this.gameObject.transform.rotation = m_OriginalRotation;
+        this.gameObject.SetActive(m_Activated);
+        this.gameObject.transform.position = m_InitialPosition;
+        this.gameObject.transform.rotation = m_InitialRotation;
+        this.gameObject.transform.localScale = m_OriginalScale;
         m_Rigidbody.velocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;
+    }
+
+    public void UpdateValues()
+    {
+        m_Activated = this.gameObject.activeSelf;
+        m_InitialPosition = this.transform.position;
+        m_InitialRotation = this.transform.rotation;
     }
 }
