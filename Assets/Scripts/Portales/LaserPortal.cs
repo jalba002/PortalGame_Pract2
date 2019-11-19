@@ -92,6 +92,10 @@ public class LaserPortal : MonoBehaviour
                     m_LastButtonHit.ForceStop();
                     m_LastButtonHit = null;
                 }
+                else if (l_RayCastHit.collider.gameObject.GetComponent<IDamageable>() != null)
+                {
+                    l_RayCastHit.collider.gameObject.GetComponent<IDamageable>().DealDamage(999, l_RayCastHit.collider);
+                }
             }
             catch
             {

@@ -11,6 +11,7 @@ public static class CheckPointManager
         {
             if (l_Checkpoint.gameObject == m_AreaCheckPoints[i].gameObject)
             {
+                m_CurrentCheckpoint.m_Collider.enabled = true;
                 m_CurrentCheckpoint = l_Checkpoint;
                 return true;
             }

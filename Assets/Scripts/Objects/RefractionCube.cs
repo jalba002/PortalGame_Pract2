@@ -61,6 +61,10 @@ public class RefractionCube : Companion
                 {
                     l_RaycastHit.collider.GetComponent<LaserPortal>().Collide(l_RaycastHit.point, this.gameObject.transform.forward);
                 }
+                else if (l_RaycastHit.collider.gameObject.GetComponent<IDamageable>() != null)
+                {
+                    l_RaycastHit.collider.gameObject.GetComponent<IDamageable>().DealDamage(999, l_RaycastHit.collider);
+                }
             }
             catch { }
             //Other collisions

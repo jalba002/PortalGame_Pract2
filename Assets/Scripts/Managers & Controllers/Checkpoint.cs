@@ -4,7 +4,7 @@
 public class Checkpoint : MonoBehaviour
 {
     //public bool m_StartingCheckpoint;
-    private Collider m_Collider;
+    [HideInInspector] public Collider m_Collider;
 
     private void Awake()
     {
