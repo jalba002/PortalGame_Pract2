@@ -221,7 +221,7 @@ public class PlayerController : MonoBehaviour, IRestartable
 
     void Update()
     {
-        if (!m_IsPlayerDead)
+        if (!m_IsPlayerDead && !GameController.m_GamePaused)
         {
             PlayerMovement();
             RegisterWeaponInputs();

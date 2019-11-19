@@ -47,6 +47,7 @@ public class Turret : MonoBehaviour
 
     private void CastLaser()
     {
+        if (GameController.m_GameFinished) return;
         if (!l_RayActive)
         {
             return;

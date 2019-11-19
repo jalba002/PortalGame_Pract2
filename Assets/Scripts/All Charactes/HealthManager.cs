@@ -61,6 +61,8 @@ public class HealthManager : MonoBehaviour, IDamageable, IRestartable
     public Image m_CanvasHealthBar;
     public Image m_CanvasShieldBar;
 
+    public bool m_Invulnerable = false;
+
     private GameObject m_AttachedGameObject;
     private bool m_IsAttachedCharacterDead;
 
@@ -91,6 +93,8 @@ public class HealthManager : MonoBehaviour, IDamageable, IRestartable
 
     public void DealDamage(int l_Amount, Collider l_ColliderHit)
     {
+        if (m_Invulnerable) return;
+
         int l_Damage = (int)l_Amount;
         if (m_IsAttachedCharacterDead) return;
         if (l_Damage <= 0)
